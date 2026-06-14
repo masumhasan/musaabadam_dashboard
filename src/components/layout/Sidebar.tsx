@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package } from 'lucide-react';
+import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Products', href: '/products', icon: <Package size={18} /> },
   { label: 'Categories', href: '/categories', icon: <Tag size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_CATEGORIES },
   { label: 'Admins', href: '/admins', icon: <Shield size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_ADMINS },
+  { label: 'Settings', href: '/settings', icon: <Settings size={18} /> },
 ];
 
 export function Sidebar() {
