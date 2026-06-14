@@ -1,0 +1,89 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { useAuth } from '@/contexts/AuthContext';
+import { ADMIN_PERMISSIONS } from '@/lib/constants';
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+  permission?: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Users', href: '/users', icon: <Users size={18} />, permission: ADMIN_PERMISSIONS.VIEW_USERS },
+  { label: 'Seller Approvals', href: '/sellers', icon: <UserCheck size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_SELLERS },
+  { label: 'Analytics', href: '/analytics', icon: <BarChart2 size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
+  { label: 'Products', href: '/products', icon: <Package size={18} /> },
+  { label: 'Categories', href: '/categories', icon: <Tag size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_CATEGORIES },
+  { label: 'Admins', href: '/admins', icon: <Shield size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_ADMINS },
+];
+
+export function Sidebar() {
+  const pathname = usePathname();
+  const { admin, logout, hasPermission } = useAuth();
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => !item.permission || hasPermission(item.permission)
+  );
+
+  return (
+    <aside className="flex h-screen w-60 flex-col bg-slate-900 border-r border-slate-800">
+      {/* Logo */}
+      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+          <Zap size={16} className="text-white" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-slate-100">BidsRush</p>
+          <p className="text-xs text-slate-500">Admin Panel</p>
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        {visibleItems.map((item) => {
+          const isActive = pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-blue-600/15 text-blue-400'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              )}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Admin info + logout */}
+      <div className="border-t border-slate-800 p-3">
+        {admin && (
+          <div className="mb-2 rounded-lg bg-slate-800 px-3 py-2.5">
+            <p className="text-sm font-medium text-slate-200 truncate">
+              {admin.firstName} {admin.lastName}
+            </p>
+            <p className="text-xs text-slate-500 truncate">{admin.role.replace('_', ' ')}</p>
+          </div>
+        )}
+        <button
+          onClick={logout}
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-red-400 transition-colors"
+        >
+          <LogOut size={16} />
+          Sign out
+        </button>
+      </div>
+    </aside>
+  );
+}
