@@ -11,6 +11,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(auth)/login/page.js"
     ],
+    "/(auth)/forgot-password/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(auth)/forgot-password/page.js"
+    ],
     "/(dashboard)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -26,6 +31,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(dashboard)/sellers/page.js"
     ],
+    "/(dashboard)/analytics/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(dashboard)/analytics/page.js"
+    ],
     "/(dashboard)/products/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -36,15 +46,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(dashboard)/categories/page.js"
     ],
-    "/(dashboard)/settings/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(dashboard)/settings/page.js"
-    ],
     "/(dashboard)/admins/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(dashboard)/admins/page.js"
+    ],
+    "/(dashboard)/settings/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(dashboard)/settings/page.js"
     ]
   }
 }

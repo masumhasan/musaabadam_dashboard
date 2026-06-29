@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, UserX, Ban, UserCheck } from 'lucide-react';
+import { Search, UserX, Ban, UserCheck, Trash2 } from 'lucide-react';
 import { TopBar } from '@/components/layout/TopBar';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { Button } from '@/components/ui/Button';
@@ -16,7 +16,7 @@ import api, { extractError } from '@/lib/api';
 import type { User, PaginatedResponse, ApiResponse } from '@/types';
 import { useForm } from 'react-hook-form';
 
-type ActionType = 'suspend' | 'ban' | null;
+type ActionType = 'suspend' | 'ban' | 'delete' | null;
 
 interface ActionModal {
   type: ActionType;
@@ -68,6 +68,12 @@ export default function UsersPage() {
     onError: (err) => setActionError(extractError(err)),
   });
 
+  const deleteMut = useMutation({
+    mutationFn: (userId: string) => api.delete(`/admin/users/${userId}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-users'] }); closeModal(); },
+    onError: (err) => setActionError(extractError(err)),
+  });
+
   const closeModal = () => { setModal({ type: null, user: null }); setActionError(''); reset(); };
 
   const onActionSubmit = handleSubmit((values) => {
@@ -77,6 +83,8 @@ export default function UsersPage() {
       suspendMut.mutate({ userId: modal.user._id, reason: values.reason, days: Number(values.days) || 7 });
     } else if (modal.type === 'ban') {
       banMut.mutate({ userId: modal.user._id, reason: values.reason });
+    } else if (modal.type === 'delete') {
+      deleteMut.mutate(modal.user._id);
     }
   });
 
@@ -159,6 +167,10 @@ export default function UsersPage() {
                               </Button>
                             </>
                           )}
+                          <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300"
+                            onClick={() => { setModal({ type: 'delete', user }); setActionError(''); }}>
+                            <Trash2 size={14} /> Delete
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -176,24 +188,45 @@ export default function UsersPage() {
       </div>
 
       {/* Action modal */}
-      <Modal open={!!modal.type} onClose={closeModal} title={modal.type === 'suspend' ? 'Suspend User' : 'Ban User'}>
-        <form onSubmit={onActionSubmit} className="space-y-4">
-          <p className="text-sm text-slate-400">
-            {modal.type === 'suspend' ? 'User will be temporarily suspended.' : 'User will be permanently banned.'}
-            {' '}<span className="text-slate-200 font-medium">{modal.user?.email}</span>
-          </p>
-          <Input label="Reason" placeholder="Provide a reason…" error={actionError || undefined} {...register('reason', { required: true })} />
-          {modal.type === 'suspend' && (
-            <Input label="Duration (days)" type="number" defaultValue="7" min={1} max={365} {...register('days')} />
-          )}
-          {actionError && <p className="text-sm text-red-400">{actionError}</p>}
-          <div className="flex gap-3 justify-end pt-2">
-            <Button type="button" variant="ghost" onClick={closeModal}>Cancel</Button>
-            <Button type="submit" variant="danger" loading={suspendMut.isPending || banMut.isPending}>
-              Confirm
-            </Button>
+      <Modal
+        open={!!modal.type}
+        onClose={closeModal}
+        title={modal.type === 'suspend' ? 'Suspend User' : modal.type === 'ban' ? 'Ban User' : 'Delete User'}
+      >
+        {modal.type === 'delete' ? (
+          <div className="space-y-4">
+            <p className="text-sm text-slate-400">
+              This will permanently delete{' '}
+              <span className="text-slate-200 font-medium">{modal.user?.email}</span>.
+              {' '}This action cannot be undone.
+            </p>
+            {actionError && <p className="text-sm text-red-400">{actionError}</p>}
+            <div className="flex gap-3 justify-end pt-2">
+              <Button type="button" variant="ghost" onClick={closeModal}>Cancel</Button>
+              <Button variant="danger" loading={deleteMut.isPending} onClick={() => modal.user && deleteMut.mutate(modal.user._id)}>
+                Delete
+              </Button>
+            </div>
           </div>
-        </form>
+        ) : (
+          <form onSubmit={onActionSubmit} className="space-y-4">
+            <p className="text-sm text-slate-400">
+              {modal.type === 'suspend' ? 'User will be temporarily suspended.' : 'User will be permanently banned.'}
+              {' '}<span className="text-slate-200 font-medium">{modal.user?.email}</span>
+            </p>
+            <Input label="Reason" placeholder="Provide a reason…" error={actionError || undefined} {...register('reason', { required: true })} />
+            {modal.type === 'suspend' && (
+              <Input label="Duration (days)" type="number" defaultValue="7" min={1} max={365} {...register('days')} />
+            )}
+            {actionError && <p className="text-sm text-red-400">{actionError}</p>}
+            <div className="flex gap-3 justify-end pt-2">
+              <Button type="button" variant="ghost" onClick={closeModal}>Cancel</Button>
+              <Button type="submit" variant="danger" loading={suspendMut.isPending || banMut.isPending}>
+                Confirm
+              </Button>
+            </div>
+          </form>
+        )}
       </Modal>
     </ProtectedRoute>
   );
