@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = Cookies.get(TOKEN_KEY);
     if (!token) { setIsLoading(false); return; }
 
-    const stored = sessionStorage.getItem(ADMIN_KEY);
+    const stored = localStorage.getItem(ADMIN_KEY);
     if (stored) {
       try { setAdmin(JSON.parse(stored)); } catch { /* ignore */ }
     }
@@ -33,11 +33,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     api.get<ApiResponse<AdminUser>>('/admin/auth/me')
       .then(({ data }) => {
         setAdmin(data.data);
-        sessionStorage.setItem(ADMIN_KEY, JSON.stringify(data.data));
+        localStorage.setItem(ADMIN_KEY, JSON.stringify(data.data));
       })
       .catch(() => {
         Cookies.remove(TOKEN_KEY);
-        sessionStorage.removeItem(ADMIN_KEY);
+        localStorage.removeItem(ADMIN_KEY);
         setAdmin(null);
       })
       .finally(() => setIsLoading(false));
@@ -49,14 +49,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       { email, password }
     );
     const { token, admin: adminData } = data.data;
-    Cookies.set(TOKEN_KEY, token, { expires: 1, sameSite: 'strict' });
-    sessionStorage.setItem(ADMIN_KEY, JSON.stringify(adminData));
+    Cookies.set(TOKEN_KEY, token, { expires: 30, sameSite: 'strict' });
+    localStorage.setItem(ADMIN_KEY, JSON.stringify(adminData));
     setAdmin(adminData);
   }, []);
 
   const logout = useCallback(() => {
     Cookies.remove(TOKEN_KEY);
-    sessionStorage.removeItem(ADMIN_KEY);
+    localStorage.removeItem(ADMIN_KEY);
     setAdmin(null);
     window.location.href = '/login';
   }, []);
