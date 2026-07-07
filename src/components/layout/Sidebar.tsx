@@ -28,7 +28,12 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={18} /> },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { admin, logout, hasPermission } = useAuth();
 
@@ -37,33 +42,48 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="flex h-screen w-60 flex-col bg-slate-900 border-r border-slate-800">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-          <Zap size={16} className="text-white" />
-        </div>
-        <div>
-          <p className="text-sm font-bold text-slate-100">BidsRush</p>
-          <p className="text-xs text-slate-500">Admin Panel</p>
-        </div>
-      </div>
+    <>
+      {/* Backdrop for mobile view */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-        {visibleItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-blue-600/15 text-blue-400'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-              )}
-            >
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex h-screen w-60 flex-col bg-slate-900 border-r border-slate-800 transition-transform duration-300 ease-in-out md:static md:translate-x-0",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+            <Zap size={16} className="text-white" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-slate-100">BidsRush</p>
+            <p className="text-xs text-slate-500">Admin Panel</p>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+          {visibleItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-blue-600/15 text-blue-400'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                )}
+              >
               {item.icon}
               {item.label}
             </Link>
@@ -89,6 +109,7 @@ export function Sidebar() {
           Sign out
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
