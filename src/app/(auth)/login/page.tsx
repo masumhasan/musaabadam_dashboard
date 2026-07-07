@@ -29,7 +29,7 @@ function LoginContent() {
   });
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) router.replace('/users');
+    if (!isLoading && isAuthenticated) router.replace('/dashboard/users');
   }, [isLoading, isAuthenticated, router]);
 
   const onSubmit = async (data: FormData) => {
@@ -37,7 +37,7 @@ function LoginContent() {
     setSubmitting(true);
     try {
       await login(data.email, data.password);
-      router.replace('/users');
+      router.replace('/dashboard/users');
     } catch (err) {
       setServerError(extractError(err));
     } finally {

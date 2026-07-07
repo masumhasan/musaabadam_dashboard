@@ -6,7 +6,7 @@ import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen overflow-hidden dark-dashboard">
         <Sidebar />
         <main className="flex-1 overflow-y-auto bg-slate-950">
           {children}

@@ -38,12 +38,15 @@ html {
 
 body {
   margin: 0;
-  background-color: oklch(12.9% 0.042 264.7); /* slate-950 */
-  color: oklch(96.1% 0.007 247.9); /* slate-100 */
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+.dark-dashboard {
+  background-color: oklch(12.9% 0.042 264.7); /* slate-950 */
+  color: oklch(96.1% 0.007 247.9); /* slate-100 */
 }
 
 ::-webkit-scrollbar {

@@ -20,6 +20,8 @@ interface Stream {
   startedAt?: string;
   createdAt: string;
   sellerId?: { username?: string; displayName?: string };
+  recordingStatus?: string;
+  recordingUrl?: string;
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -98,11 +100,18 @@ export default function LivestreamsPage() {
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[s.status] || ''}`}>{s.status}</span>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
                       {s.status === 'live' && (
                         <Button size="sm" variant="danger" onClick={() => terminateMut.mutate(s._id)}>
                           <StopCircle size={14} /> Terminate
                         </Button>
+                      )}
+                      {s.status === 'ended' && s.recordingStatus === 'ready' && s.recordingUrl && (
+                        <a href={s.recordingUrl} target="_blank" rel="noopener noreferrer" className="inline-block">
+                          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                            Play Replay
+                          </Button>
+                        </a>
                       )}
                     </td>
                   </tr>

@@ -8,15 +8,17 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(TOKEN_COOKIE)?.value;
 
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  const isDashboardRoute = pathname.startsWith('/dashboard');
 
-  if (isPublic) {
-    if (token) return NextResponse.redirect(new URL('/users', request.url));
-    return NextResponse.next();
-  }
-
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  if (isDashboardRoute) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  } else {
+    const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+    if (isPublic && token) {
+      return NextResponse.redirect(new URL('/dashboard/users', request.url));
+    }
   }
 
   return NextResponse.next();

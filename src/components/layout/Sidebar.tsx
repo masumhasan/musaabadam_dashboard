@@ -15,17 +15,17 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Users', href: '/users', icon: <Users size={18} />, permission: ADMIN_PERMISSIONS.VIEW_USERS },
-  { label: 'Seller Approvals', href: '/sellers', icon: <UserCheck size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_SELLERS },
-  { label: 'Analytics', href: '/analytics', icon: <BarChart2 size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
-  { label: 'Products', href: '/products', icon: <Package size={18} /> },
-  { label: 'Orders', href: '/orders', icon: <ShoppingBag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
-  { label: 'Payouts', href: '/payouts', icon: <Banknote size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_PAYOUTS },
-  { label: 'Livestreams', href: '/livestreams', icon: <Radio size={18} />, permission: ADMIN_PERMISSIONS.TERMINATE_STREAMS },
-  { label: 'Categories', href: '/categories', icon: <Tag size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_CATEGORIES },
-  { label: 'Reports', href: '/reports', icon: <Flag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
-  { label: 'Admins', href: '/admins', icon: <Shield size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_ADMINS },
-  { label: 'Settings', href: '/settings', icon: <Settings size={18} /> },
+  { label: 'Users', href: '/dashboard/users', icon: <Users size={18} />, permission: ADMIN_PERMISSIONS.VIEW_USERS },
+  { label: 'Seller Approvals', href: '/dashboard/sellers', icon: <UserCheck size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_SELLERS },
+  { label: 'Analytics', href: '/dashboard/analytics', icon: <BarChart2 size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
+  { label: 'Products', href: '/dashboard/products', icon: <Package size={18} /> },
+  { label: 'Orders', href: '/dashboard/orders', icon: <ShoppingBag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
+  { label: 'Payouts', href: '/dashboard/payouts', icon: <Banknote size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_PAYOUTS },
+  { label: 'Livestreams', href: '/dashboard/livestreams', icon: <Radio size={18} />, permission: ADMIN_PERMISSIONS.TERMINATE_STREAMS },
+  { label: 'Categories', href: '/dashboard/categories', icon: <Tag size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_CATEGORIES },
+  { label: 'Reports', href: '/dashboard/reports', icon: <Flag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
+  { label: 'Admins', href: '/dashboard/admins', icon: <Shield size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_ADMINS },
+  { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={18} /> },
 ];
 
 export function Sidebar() {
