@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio } from 'lucide-react';
+import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Products', href: '/dashboard/products', icon: <Package size={18} /> },
   { label: 'Orders', href: '/dashboard/orders', icon: <ShoppingBag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
   { label: 'Payouts', href: '/dashboard/payouts', icon: <Banknote size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_PAYOUTS },
+  { label: 'Rewards', href: '/dashboard/rewards', icon: <Gift size={18} /> },
   { label: 'Livestreams', href: '/dashboard/livestreams', icon: <Radio size={18} />, permission: ADMIN_PERMISSIONS.TERMINATE_STREAMS },
   { label: 'Categories', href: '/dashboard/categories', icon: <Tag size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_CATEGORIES },
   { label: 'Reports', href: '/dashboard/reports', icon: <Flag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
