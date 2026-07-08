@@ -36,6 +36,12 @@ export interface User {
 export interface SellerProfile {
   status: string;
   primaryCategory?: string;
+  subcategory?: string;
+  sellerType?: string;
+  businessAddress?: any;
+  averageEarningRange?: string;
+  identityDocUrl?: string;
+  businessLicenseUrl?: string;
   bio?: string;
   appliedAt?: string;
   approvedAt?: string;

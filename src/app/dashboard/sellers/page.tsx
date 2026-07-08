@@ -16,7 +16,7 @@ import api, { extractError } from '@/lib/api';
 import type { User, PaginatedResponse, ApiResponse } from '@/types';
 import { useForm } from 'react-hook-form';
 
-type ModalType = 'reject' | 'info' | null;
+type ModalType = 'reject' | 'info' | 'details' | null;
 
 function useSellers(params: Record<string, string | number>) {
   const cleanParams = Object.fromEntries(
@@ -113,22 +113,10 @@ export default function SellersPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
-                          {user.sellerProfile?.status === 'pending' && (
-                            <>
-                              <Button size="sm" variant="ghost" loading={approveMut.isPending}
-                                onClick={() => approveMut.mutate(user._id)}>
-                                <CheckCircle size={14} /> Approve
-                              </Button>
-                              <Button size="sm" variant="ghost"
-                                onClick={() => { setModal({ type: 'info', user }); setActionError(''); }}>
-                                <Info size={14} /> Info
-                              </Button>
-                              <Button size="sm" variant="ghost"
-                                onClick={() => { setModal({ type: 'reject', user }); setActionError(''); }}>
-                                <XCircle size={14} /> Reject
-                              </Button>
-                            </>
-                          )}
+                          <Button size="sm" variant="ghost"
+                            onClick={() => { setModal({ type: 'details', user }); setActionError(''); }}>
+                            <Info size={14} /> Details
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -145,7 +133,7 @@ export default function SellersPage() {
         </div>
       </div>
 
-      <Modal open={!!modal.type} onClose={closeModal}
+      <Modal open={modal.type === 'reject' || modal.type === 'info'} onClose={closeModal}
         title={modal.type === 'reject' ? 'Reject Application' : 'Request More Information'}>
         <form onSubmit={onSubmit} className="space-y-4">
           <p className="text-sm text-slate-400">
@@ -159,6 +147,106 @@ export default function SellersPage() {
             <Button type="submit" variant="danger" loading={rejectMut.isPending || infoMut.isPending}>Confirm</Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal open={modal.type === 'details'} onClose={closeModal} title="Seller Application Details">
+        {modal.user && (
+          <div className="space-y-4 text-slate-300">
+            <div>
+              <h3 className="font-semibold text-slate-100 mb-1">Account Information</h3>
+              <p className="text-sm">Username: <span className="text-slate-200 font-medium">{modal.user.username}</span></p>
+              <p className="text-sm">Email: <span className="text-slate-200 font-medium">{modal.user.email}</span></p>
+              <p className="text-sm">Display Name: <span className="text-slate-200 font-medium">{modal.user.displayName || '—'}</span></p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-slate-100 mb-1">Application Survey</h3>
+              <p className="text-sm">Primary Category: <span className="text-slate-200 font-medium">{modal.user.sellerProfile?.primaryCategory || '—'}</span></p>
+              <p className="text-sm">Subcategories: <span className="text-slate-200 font-medium">{modal.user.sellerProfile?.subcategory || '—'}</span></p>
+              <p className="text-sm">Seller Type: <span className="text-slate-200 font-medium">{modal.user.sellerProfile?.sellerType === 'starting' ? 'Starting out' : 'Actively selling'}</span></p>
+              <p className="text-sm">Average Monthly Earnings: <span className="text-slate-200 font-medium">{modal.user.sellerProfile?.averageEarningRange || '—'}</span></p>
+            </div>
+
+            {modal.user.sellerProfile?.businessAddress && (
+              <div>
+                <h3 className="font-semibold text-slate-100 mb-1">Business Address</h3>
+                <p className="text-sm">Full Name: <span className="text-slate-200 font-medium">{modal.user.sellerProfile.businessAddress.fullName}</span></p>
+                <p className="text-sm">Line 1: <span className="text-slate-200 font-medium">{modal.user.sellerProfile.businessAddress.line1}</span></p>
+                {modal.user.sellerProfile.businessAddress.line2 && (
+                  <p className="text-sm">Line 2: <span className="text-slate-200 font-medium">{modal.user.sellerProfile.businessAddress.line2}</span></p>
+                )}
+                <p className="text-sm">City, State, ZIP: <span className="text-slate-200 font-medium">{modal.user.sellerProfile.businessAddress.city}, {modal.user.sellerProfile.businessAddress.state || ''} {modal.user.sellerProfile.businessAddress.postalCode}</span></p>
+                <p className="text-sm">Country: <span className="text-slate-200 font-medium">{modal.user.sellerProfile.businessAddress.country}</span></p>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <h3 className="font-semibold text-slate-100">KYC Documents</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-3 bg-slate-950 rounded border border-slate-800">
+                  <span className="text-xs text-slate-400 block mb-1">Identity Document</span>
+                  {modal.user.sellerProfile?.identityDocUrl ? (
+                    <div className="space-y-2">
+                      <a href={modal.user.sellerProfile.identityDocUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline break-all block">
+                        View Full Document ↗
+                      </a>
+                      {modal.user.sellerProfile.identityDocUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                        <img src={modal.user.sellerProfile.identityDocUrl} alt="Identity Document" className="max-h-32 w-full rounded border border-slate-800 mt-1 object-contain bg-black" />
+                      ) : (
+                        <div className="p-2 bg-slate-900 text-center text-xs text-slate-400 rounded">Non-image file (PDF/Doc)</div>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-slate-500 italic">Not uploaded</span>
+                  )}
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded border border-slate-800">
+                  <span className="text-xs text-slate-400 block mb-1">Business License</span>
+                  {modal.user.sellerProfile?.businessLicenseUrl ? (
+                    <div className="space-y-2">
+                      <a href={modal.user.sellerProfile.businessLicenseUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline break-all block">
+                        View Full License ↗
+                      </a>
+                      {modal.user.sellerProfile.businessLicenseUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                        <img src={modal.user.sellerProfile.businessLicenseUrl} alt="Business License" className="max-h-32 w-full rounded border border-slate-800 mt-1 object-contain bg-black" />
+                      ) : (
+                        <div className="p-2 bg-slate-900 text-center text-xs text-slate-400 rounded">Non-image file (PDF/Doc)</div>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-slate-500 italic">Not uploaded</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {actionError && <p className="text-sm text-red-400">{actionError}</p>}
+
+            <div className="flex gap-3 justify-end pt-4 border-t border-slate-800">
+              <Button type="button" variant="ghost" onClick={closeModal}>Cancel</Button>
+              {modal.user.sellerProfile?.status === 'pending' && (
+                <>
+                  <Button type="button" variant="ghost"
+                    onClick={() => { setModal({ type: 'info', user: modal.user }); setActionError(''); }}>
+                    Request Info
+                  </Button>
+                  <Button type="button" variant="danger"
+                    onClick={() => { setModal({ type: 'reject', user: modal.user }); setActionError(''); }}>
+                    Reject
+                  </Button>
+                  <Button type="button" variant="primary" loading={approveMut.isPending}
+                    onClick={async () => {
+                      await approveMut.mutateAsync(modal.user!._id);
+                      closeModal();
+                    }}>
+                    Approve
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </Modal>
     </ProtectedRoute>
   );
