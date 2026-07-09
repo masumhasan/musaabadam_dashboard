@@ -156,9 +156,13 @@ export default function CategoriesPage() {
                   <tr key={cat._id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        {cat.imageUrl && (
+                        {cat.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={cat.imageUrl} alt="" className="h-7 w-7 rounded object-cover" />
+                        ) : (
+                          <div className="h-7 w-7 rounded bg-slate-800 border border-slate-700 flex items-center justify-center">
+                            <span className="text-[10px] text-slate-500 font-medium">N/A</span>
+                          </div>
                         )}
                         <p className="font-medium text-slate-200">{cat.name}</p>
                       </div>
