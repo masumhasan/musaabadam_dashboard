@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift } from 'lucide-react';
+import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift, Hash } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'DMs', href: '/dashboard/dms', icon: <UserCheck size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
   { label: 'Livestreams', href: '/dashboard/livestreams', icon: <Radio size={18} />, permission: ADMIN_PERMISSIONS.TERMINATE_STREAMS },
   { label: 'Categories', href: '/dashboard/categories', icon: <Tag size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_CATEGORIES },
+  { label: 'Tags & Words', href: '/dashboard/tags-words', icon: <Hash size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
   { label: 'Reports', href: '/dashboard/reports', icon: <Flag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
   { label: 'Admins', href: '/dashboard/admins', icon: <Shield size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_ADMINS },
   { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={18} /> },

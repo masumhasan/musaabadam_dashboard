@@ -5,7 +5,7 @@ import { FileText, Shield, Settings } from 'lucide-react';
 import api, { extractError } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 
-type TabKey = 'privacy_policy' | 'terms_and_conditions' | 'platform_settings';
+type TabKey = 'privacy_policy' | 'terms_and_conditions';
 
 interface Tab {
   key: TabKey;
@@ -30,13 +30,6 @@ const TABS: Tab[] = [
     getEndpoint: '/settings/terms',
     putEndpoint: '/admin/settings/terms',
   },
-  {
-    key: 'platform_settings',
-    label: 'Platform Settings',
-    icon: <Settings size={16} />,
-    getEndpoint: '/settings/platform',
-    putEndpoint: '/admin/settings/platform',
-  },
 ];
 
 export default function SettingsPage() {
@@ -44,16 +37,10 @@ export default function SettingsPage() {
   const [contents, setContents] = useState<Record<string, any>>({
     privacy_policy: '',
     terms_and_conditions: '',
-    platform_settings: {
-      allowedTags: [],
-      globalMutedWords: [],
-      allowedLanguages: ['English'],
-    },
   });
   const [loading, setLoading] = useState<Record<TabKey, boolean>>({
     privacy_policy: false,
     terms_and_conditions: false,
-    platform_settings: false,
   });
   const [saving, setSaving] = useState(false);
   const [fetchedTabs, setFetchedTabs] = useState<Set<TabKey>>(new Set());
@@ -65,18 +52,7 @@ export default function SettingsPage() {
     setLoading((prev) => ({ ...prev, [tab.key]: true }));
     try {
       const { data } = await api.get(tab.getEndpoint);
-      if (tab.key === 'platform_settings') {
-        setContents((prev) => ({
-          ...prev,
-          [tab.key]: {
-            allowedTags: data.data.settings?.allowedTags || [],
-            globalMutedWords: data.data.settings?.globalMutedWords || [],
-            allowedLanguages: data.data.settings?.allowedLanguages || ['English'],
-          },
-        }));
-      } else {
-        setContents((prev) => ({ ...prev, [tab.key]: data.data.content ?? '' }));
-      }
+      setContents((prev) => ({ ...prev, [tab.key]: data.data.content ?? '' }));
       setFetchedTabs((prev) => new Set([...prev, tab.key]));
     } catch {
       // leave empty on failure
@@ -96,11 +72,7 @@ export default function SettingsPage() {
     setErrorMsg('');
     setSaving(true);
     try {
-      if (tab.key === 'platform_settings') {
-        await api.put(tab.putEndpoint, contents[activeTab]);
-      } else {
-        await api.put(tab.putEndpoint, { content: contents[activeTab] });
-      }
+      await api.put(tab.putEndpoint, { content: contents[activeTab] });
       setSuccessMsg('Saved successfully.');
     } catch (err) {
       setErrorMsg(extractError(err));
@@ -110,65 +82,6 @@ export default function SettingsPage() {
   };
 
   const currentTab = TABS.find((t) => t.key === activeTab)!;
-
-  const renderPlatformSettings = () => {
-    const pSettings = contents.platform_settings;
-    return (
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Allowed Tags (comma separated)</label>
-          <input
-            type="text"
-            value={pSettings.allowedTags.join(', ')}
-            onChange={(e) =>
-              setContents((prev) => ({
-                ...prev,
-                platform_settings: {
-                  ...prev.platform_settings,
-                  allowedTags: e.target.value.split(',').map((s) => s.trim()).filter(Boolean),
-                },
-              }))
-            }
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Global Muted Words (comma separated)</label>
-          <input
-            type="text"
-            value={pSettings.globalMutedWords.join(', ')}
-            onChange={(e) =>
-              setContents((prev) => ({
-                ...prev,
-                platform_settings: {
-                  ...prev.platform_settings,
-                  globalMutedWords: e.target.value.split(',').map((s) => s.trim()).filter(Boolean),
-                },
-              }))
-            }
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Allowed Languages (comma separated)</label>
-          <input
-            type="text"
-            value={pSettings.allowedLanguages.join(', ')}
-            onChange={(e) =>
-              setContents((prev) => ({
-                ...prev,
-                platform_settings: {
-                  ...prev.platform_settings,
-                  allowedLanguages: e.target.value.split(',').map((s) => s.trim()).filter(Boolean),
-                },
-              }))
-            }
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -206,20 +119,16 @@ export default function SettingsPage() {
           <h2 className="text-lg font-semibold text-slate-100">{currentTab.label}</h2>
         </div>
 
-        {activeTab !== 'platform_settings' && (
-          <p className="text-sm text-slate-400 mb-3">
-            This text is shown to users in the app under{' '}
-            <span className="text-slate-200 font-medium">Profile → {currentTab.label}</span>.
-            Plain text only — line breaks are preserved.
-          </p>
-        )}
-
+        <p className="text-sm text-slate-400 mb-3">
+          This text is shown to users in the app under{' '}
+          <span className="text-slate-200 font-medium">Profile → {currentTab.label}</span>.
+          Plain text only — line breaks are preserved.
+        </p>
+        
         {loading[activeTab] ? (
           <div className="h-64 flex items-center justify-center">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-600 border-t-blue-500" />
           </div>
-        ) : activeTab === 'platform_settings' ? (
-          renderPlatformSettings()
         ) : (
           <textarea
             value={contents[activeTab]}
