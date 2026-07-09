@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { Modal } from '@/components/ui/Modal';
 import { PageLoader } from '@/components/ui/Spinner';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
 import api, { extractError } from '@/lib/api';
 import type { Category, CategoryPaginatedResponse, ApiResponse } from '@/types';
@@ -25,7 +26,7 @@ const categorySchema = z.object({
   name: z.string().min(1, 'Name required').max(80),
   slug: z.string().max(80).regex(/^[a-z0-9-]*$/, 'Lowercase letters, numbers, hyphens only').optional().or(z.literal('')),
   parentId: z.string().optional().or(z.literal('')),
-  iconUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   sortOrder: z.coerce.number().int().min(0).optional(),
 });
 type CategoryForm = z.infer<typeof categorySchema>;
@@ -71,7 +72,7 @@ export default function CategoriesPage() {
 
   const createForm = useForm<CategoryForm>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { name: '', slug: '', parentId: '', iconUrl: '', sortOrder: 0 },
+    defaultValues: { name: '', slug: '', parentId: '', imageUrl: '', sortOrder: 0 },
   });
 
   const editForm = useForm<UpdateForm>({
@@ -116,7 +117,7 @@ export default function CategoriesPage() {
       name: cat.name,
       slug: cat.slug,
       parentId: cat.parentId?._id ?? '',
-      iconUrl: cat.iconUrl ?? '',
+      imageUrl: cat.imageUrl ?? '',
       sortOrder: cat.sortOrder,
       isActive: cat.isActive,
     });
@@ -155,9 +156,9 @@ export default function CategoriesPage() {
                   <tr key={cat._id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        {cat.iconUrl && (
+                        {cat.imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={cat.iconUrl} alt="" className="h-7 w-7 rounded object-cover" />
+                          <img src={cat.imageUrl} alt="" className="h-7 w-7 rounded object-cover" />
                         )}
                         <p className="font-medium text-slate-200">{cat.name}</p>
                       </div>
@@ -244,11 +245,12 @@ export default function CategoriesPage() {
               ))}
             </select>
           </div>
-          <Input
-            label="Icon URL (optional)"
-            placeholder="https://..."
-            error={createForm.formState.errors.iconUrl?.message}
-            {...createForm.register('iconUrl')}
+          <ImageUpload
+            label="Category Image (optional)"
+            folder="category"
+            value={createForm.watch('imageUrl')}
+            onChange={(url) => createForm.setValue('imageUrl', url)}
+            error={createForm.formState.errors.imageUrl?.message}
           />
           <Input
             label="Sort order"
@@ -295,11 +297,12 @@ export default function CategoriesPage() {
                 ))}
             </select>
           </div>
-          <Input
-            label="Icon URL"
-            placeholder="https://..."
-            error={editForm.formState.errors.iconUrl?.message}
-            {...editForm.register('iconUrl')}
+          <ImageUpload
+            label="Category Image (optional)"
+            folder="category"
+            value={editForm.watch('imageUrl')}
+            onChange={(url) => editForm.setValue('imageUrl', url)}
+            error={editForm.formState.errors.imageUrl?.message}
           />
           <Input
             label="Sort order"

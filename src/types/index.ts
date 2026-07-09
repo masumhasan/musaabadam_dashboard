@@ -70,7 +70,7 @@ export interface Category {
   name: string;
   slug: string;
   parentId: { _id: string; name: string; slug: string } | null;
-  iconUrl?: string;
+  imageUrl?: string;
   isActive: boolean;
   sortOrder: number;
   createdAt: string;
