@@ -99,7 +99,7 @@ export default function OffersPage() {
         
         {data && data.totalPages > 1 && (
           <div className="mt-4 flex justify-center">
-            <Pagination currentPage={page} totalPages={data.totalPages} onPageChange={setPage} />
+            <Pagination page={page} totalPages={data.totalPages} total={data.total} limit={20} onChange={setPage} />
           </div>
         )}
       </div>

@@ -28,6 +28,7 @@ export interface User {
   isSuspended: boolean;
   suspendedUntil?: string;
   banReason?: string;
+  referralCode?: string;
   sellerProfile?: SellerProfile | null;
   createdAt: string;
   lastLoginAt?: string;

@@ -130,6 +130,7 @@ export default function UsersPage() {
               <thead>
                 <tr className="border-b border-slate-800 text-left text-slate-400">
                   <th className="px-4 py-3 font-medium">User</th>
+                  <th className="px-4 py-3 font-medium">Referral Code</th>
                   <th className="px-4 py-3 font-medium">Role</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Joined</th>
@@ -145,6 +146,7 @@ export default function UsersPage() {
                         <p className="font-medium text-slate-200">{user.displayName || user.username}</p>
                         <p className="text-slate-500 text-xs">{user.email}</p>
                       </td>
+                      <td className="px-4 py-3 font-mono text-xs text-slate-300">{user.referralCode || '—'}</td>
                       <td className="px-4 py-3 text-slate-400">{USER_ROLE_LABELS[user.role] ?? user.role}</td>
                       <td className="px-4 py-3"><Badge variant={variant}>{label}</Badge></td>
                       <td className="px-4 py-3 text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</td>
