@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift, Hash, MessageSquareOff } from 'lucide-react';
+import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift, Hash, MessageSquareOff, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
@@ -30,6 +30,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Muted Words', href: '/dashboard/muted-words', icon: <MessageSquareOff size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
   { label: 'Reports', href: '/dashboard/reports', icon: <Flag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
   { label: 'Admins', href: '/dashboard/admins', icon: <Shield size={18} />, permission: ADMIN_PERMISSIONS.MANAGE_ADMINS },
+  { label: 'FAQ', href: '/dashboard/faq', icon: <HelpCircle size={18} /> },
   { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={18} /> },
 ];
 
