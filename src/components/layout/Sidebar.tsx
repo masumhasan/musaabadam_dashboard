@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Orders', href: '/dashboard/orders', icon: <ShoppingBag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
   { label: 'Offers', href: '/dashboard/offers', icon: <Tag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
   { label: 'Payouts', href: '/dashboard/payouts', icon: <Banknote size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_PAYOUTS },
+  { label: 'Tips', href: '/dashboard/tips', icon: <Banknote size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
   { label: 'Rewards', href: '/dashboard/rewards', icon: <Gift size={18} /> },
   { label: 'DMs', href: '/dashboard/dms', icon: <UserCheck size={18} />, permission: ADMIN_PERMISSIONS.VIEW_REPORTS },
   { label: 'Livestreams', href: '/dashboard/livestreams', icon: <Radio size={18} />, permission: ADMIN_PERMISSIONS.TERMINATE_STREAMS },
