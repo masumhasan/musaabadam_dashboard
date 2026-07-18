@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift, Hash, MessageSquareOff, HelpCircle } from 'lucide-react';
+import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift, Hash, MessageSquareOff, HelpCircle, Award } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/contexts/AuthContext';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
@@ -17,6 +17,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Users', href: '/dashboard/users', icon: <Users size={18} />, permission: ADMIN_PERMISSIONS.VIEW_USERS },
   { label: 'Seller Approvals', href: '/dashboard/sellers', icon: <UserCheck size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_SELLERS },
+  { label: 'Premier Shop', href: '/dashboard/premier-shop', icon: <Award size={18} />, permission: ADMIN_PERMISSIONS.APPROVE_SELLERS },
   { label: 'Analytics', href: '/dashboard/analytics', icon: <BarChart2 size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
   { label: 'Products', href: '/dashboard/products', icon: <Package size={18} /> },
   { label: 'Orders', href: '/dashboard/orders', icon: <ShoppingBag size={18} />, permission: ADMIN_PERMISSIONS.VIEW_ANALYTICS },
@@ -34,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'FAQ', href: '/dashboard/faq', icon: <HelpCircle size={18} /> },
   { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={18} /> },
 ];
+
 
 interface SidebarProps {
   isOpen?: boolean;
