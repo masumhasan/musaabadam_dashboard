@@ -3,10 +3,11 @@ import Cookies from 'js-cookie';
 import { TOKEN_KEY } from './constants';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://backend.bidsrush.com/api/v1',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
+
 
 api.interceptors.request.use((config) => {
   const token = Cookies.get(TOKEN_KEY);
