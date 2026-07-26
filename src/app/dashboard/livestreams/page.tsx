@@ -2,18 +2,21 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Radio, StopCircle } from 'lucide-react';
+import { Radio, StopCircle, Pencil, Trash2 } from 'lucide-react';
 import { TopBar } from '@/components/layout/TopBar';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { Button } from '@/components/ui/Button';
 import { Pagination } from '@/components/ui/Pagination';
 import { PageLoader } from '@/components/ui/Spinner';
+import { Modal } from '@/components/ui/Modal';
+import { Input } from '@/components/ui/Input';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
 import api, { extractError } from '@/lib/api';
 
 interface Stream {
   _id: string;
   title: string;
+  description?: string;
   status: string;
   totalViewers: number;
   currentViewers?: number;
@@ -40,6 +43,12 @@ export default function LivestreamsPage() {
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
 
+  // Edit States
+  const [editTarget, setEditTarget] = useState<Stream | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editStatus, setEditStatus] = useState('');
+
   const { data, isLoading } = useQuery({
     queryKey: ['admin-streams', page, status],
     queryFn: async () => {
@@ -55,6 +64,34 @@ export default function LivestreamsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-streams'] }),
     onError: (err) => setError(extractError(err)),
   });
+
+  const updateMut = useMutation({
+    mutationFn: ({ id, title, description, status }: { id: string; title: string; description: string; status: string }) =>
+      api.patch(`/admin/streams/${id}`, { title, description, status }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-streams'] }),
+      setEditTarget(null);
+      setError('');
+    },
+    onError: (err) => setError(extractError(err)),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => api.delete(`/admin/streams/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-streams'] }),
+      setError('');
+    },
+    onError: (err) => setError(extractError(err)),
+  });
+
+  const handleOpenEdit = (stream: Stream) => {
+    setEditTarget(stream);
+    setEditTitle(stream.title);
+    setEditDescription(stream.description || '');
+    setEditStatus(stream.status);
+    setError('');
+  };
 
   return (
     <ProtectedRoute permission={ADMIN_PERMISSIONS.TERMINATE_STREAMS}>
@@ -100,7 +137,17 @@ export default function LivestreamsPage() {
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[s.status] || ''}`}>{s.status}</span>
                     </td>
-                    <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
+                     <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
+                      <Button size="sm" variant="secondary" onClick={() => handleOpenEdit(s)}>
+                        <Pencil size={14} /> Edit
+                      </Button>
+                      <Button size="sm" variant="danger" onClick={() => {
+                        if (window.confirm(`Are you sure you want to delete "${s.title}"?`)) {
+                          deleteMut.mutate(s._id);
+                        }
+                      }}>
+                        <Trash2 size={14} /> Delete
+                      </Button>
                       {s.status === 'live' && (
                         <Button size="sm" variant="danger" onClick={() => terminateMut.mutate(s._id)}>
                           <StopCircle size={14} /> Terminate
@@ -127,6 +174,79 @@ export default function LivestreamsPage() {
           </div>
         )}
       </div>
+
+      <Modal
+        open={!!editTarget}
+        onClose={() => setEditTarget(null)}
+        title="Edit Livestream"
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!editTarget) return;
+            updateMut.mutate({
+              id: editTarget._id,
+              title: editTitle,
+              description: editDescription,
+              status: editStatus,
+            });
+          }}
+          className="flex flex-col gap-4 text-slate-200"
+        >
+          <Input
+            label="Title"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            required
+          />
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-slate-300">
+              Description
+            </label>
+            <textarea
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-slate-600"
+              rows={3}
+              placeholder="Stream description..."
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-slate-300">
+              Status
+            </label>
+            <select
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={editStatus}
+              onChange={(e) => setEditStatus(e.target.value)}
+            >
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="live">Live</option>
+              <option value="ended">Ended</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end gap-2 border-t border-slate-850 pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setEditTarget(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              loading={updateMut.isPending}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </ProtectedRoute>
   );
 }
