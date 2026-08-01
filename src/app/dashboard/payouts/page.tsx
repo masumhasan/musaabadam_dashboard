@@ -39,7 +39,7 @@ export default function PayoutsPage() {
       const params: Record<string, string | number> = { page, limit: 20 };
       if (status) params.status = status;
       const { data } = await api.get('/admin/payouts', { params });
-      return data.data as { payouts: Payout[]; total: number; totalPages: number };
+      return data.data as { payouts: Payout[]; total: number; totalPages: number; totalPaid: number; totalPending: number };
     },
   });
 
@@ -59,6 +59,19 @@ export default function PayoutsPage() {
             </button>
           ))}
         </div>
+
+        {data && (
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Paid Payouts</p>
+              <p className="mt-2 text-3xl font-bold text-emerald-400">£{data.totalPaid.toFixed(2)}</p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Pending/Processing Payouts</p>
+              <p className="mt-2 text-3xl font-bold text-amber-400">£{data.totalPending.toFixed(2)}</p>
+            </div>
+          </div>
+        )}
 
         {isLoading ? (
           <PageLoader />

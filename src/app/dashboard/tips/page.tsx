@@ -42,7 +42,7 @@ export default function TipsPage() {
     queryFn: async () => {
       const params = { page, limit: 20 };
       const { data } = await api.get('/admin/tips', { params });
-      return data.data as { tips: Tip[]; total: number; totalPages: number };
+      return data.data as { tips: Tip[]; total: number; totalPages: number; totalAmount: number };
     },
   });
 
@@ -54,6 +54,19 @@ export default function TipsPage() {
           <Banknote size={18} className="text-slate-400" />
           <h2 className="text-lg font-semibold text-slate-200">Tips Log</h2>
         </div>
+
+        {data && (
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Tips Processed</p>
+              <p className="mt-2 text-3xl font-bold text-emerald-400">£{data.totalAmount.toFixed(2)}</p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Tips Count</p>
+              <p className="mt-2 text-3xl font-bold text-slate-200">{data.total} tips</p>
+            </div>
+          </div>
+        )}
 
         {isLoading ? (
           <PageLoader />

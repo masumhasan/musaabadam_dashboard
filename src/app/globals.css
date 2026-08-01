@@ -24,6 +24,15 @@
   --color-red-400: oklch(70.4% 0.191 22.2);
   --color-red-500: oklch(63.7% 0.237 25.3);
   --color-orange-400: oklch(75% 0.183 55.9);
+
+  /* bklit chart color tokens */
+  --chart-1: oklch(62.3% 0.214 259.8);   /* blue-500  — primary series  */
+  --chart-2: oklch(72.3% 0.219 149.6);   /* green-500 — secondary series */
+  --chart-3: oklch(85.2% 0.199 91.9);    /* yellow-400 — tertiary         */
+  --chart-4: oklch(75% 0.183 55.9);      /* orange-400 — quaternary       */
+  --chart-5: oklch(70.4% 0.191 22.2);    /* red-400    — quinary          */
+  --chart-grid: oklch(27.9% 0.041 260.0 / 0.5); /* slate-800 at 50%      */
+  --chart-surface: oklch(20.8% 0.042 265.8);     /* slate-900             */
 }
 
 *,
