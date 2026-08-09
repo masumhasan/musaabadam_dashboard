@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Users, UserCheck, Shield, BarChart2, LogOut, Zap, Tag, Package, Settings, Flag, ShoppingBag, Banknote, Radio, Gift, Hash, MessageSquareOff, HelpCircle, Award } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -67,14 +68,18 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         )}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-            <Zap size={16} className="text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-slate-100">BidsRush</p>
-            <p className="text-xs text-slate-500">Admin Panel</p>
-          </div>
+        <div className="flex flex-col gap-1.5 px-5 py-[18px] border-b border-slate-800">
+          <Link href="/dashboard" className="flex items-center">
+            <Image
+              src="/logo.png"
+              alt="BidsRush Logo"
+              width={120}
+              height={36}
+              priority
+              style={{ height: "auto", width: "auto" }}
+            />
+          </Link>
+          <span className="text-[10px] font-semibold text-slate-500 tracking-wider uppercase pl-1 mt-0.5">Admin Panel</span>
         </div>
 
         {/* Nav */}
