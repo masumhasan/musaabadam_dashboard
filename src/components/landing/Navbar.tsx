@@ -11,7 +11,6 @@ export default function Navbar() {
 
   const navLinks = [
     { label: "Explore", href: "#explore" },
-    { label: "Live Now", href: "#live-now" },
     { label: "Categories", href: "#categories" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "Sell on BidsRush", href: "#sell-on-bidsrush" },
@@ -98,9 +97,9 @@ export default function Navbar() {
 
           {/* Desktop Action Buttons with scale & glow effects */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
-            <button className="relative overflow-hidden group border border-gray-300 rounded-lg px-5 py-2 text-sm font-bold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2] hover:shadow-md">
-              <span className="relative z-10">Log In</span>
-            </button>
+            <Link href="/dashboard" className="relative overflow-hidden group border border-gray-300 rounded-lg px-5 py-2 text-sm font-bold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2] hover:shadow-md flex items-center justify-center">
+              <span className="relative z-10">Admin Login</span>
+            </Link>
             <button className="relative overflow-hidden group bg-[#1877F2] rounded-lg px-5 py-2 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1560cc] hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5">
               <span className="relative z-10">Sign Up Free</span>
             </button>
@@ -111,9 +110,9 @@ export default function Navbar() {
 
           {/* Tablet: show only buttons */}
           <div className="hidden md:flex lg:hidden items-center gap-2 flex-shrink-0">
-            <button className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2]">
-              Log In
-            </button>
+            <Link href="/dashboard" className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2] flex items-center justify-center">
+              Admin Login
+            </Link>
             <button className="bg-[#1877F2] rounded-lg px-3 py-1.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#1560cc] hover:shadow-md">
               Sign Up Free
             </button>
@@ -124,9 +123,9 @@ export default function Navbar() {
 
           {/* Mobile Right: Log In + Hamburger */}
           <div className="flex md:hidden items-center gap-2">
-            <button className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2]">
-              Log In
-            </button>
+            <Link href="/dashboard" className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2] flex items-center justify-center">
+              Admin Login
+            </Link>
             {/* Animated Hamburger */}
             <button
               onClick={() => setMenuOpen(true)}
@@ -233,9 +232,9 @@ export default function Navbar() {
 
         {/* Drawer Footer Buttons with hover lift effect */}
         <div className="flex flex-col gap-3 px-5 py-6 border-t border-gray-100">
-          <button className="w-full border border-gray-300 rounded-xl py-3 text-sm font-bold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2] hover:shadow-md hover:-translate-y-0.5">
-            Log In
-          </button>
+          <Link href="/dashboard" className="w-full border border-gray-300 rounded-xl py-3 text-sm font-bold text-gray-700 bg-white transition-all duration-200 hover:border-[#1877F2] hover:text-[#1877F2] hover:shadow-md hover:-translate-y-0.5 flex items-center justify-center">
+            Admin Login
+          </Link>
           <button className="w-full bg-[#1877F2] rounded-xl py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1560cc] hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5">
             Sign Up Free
           </button>
