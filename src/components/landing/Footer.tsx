@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 function useInView(threshold = 0.05) {
   const ref = useRef<HTMLElement>(null);
@@ -123,13 +124,13 @@ export default function Footer() {
           >
             {/* Logo */}
             <div className="flex items-center gap-1 mb-4">
-              <span className="text-xl font-black tracking-tight text-gray-900 uppercase">
-                BIDS
-              </span>
-              <span className="text-xl font-black text-yellow-400">★</span>
-              <span className="text-xl font-black tracking-tight text-gray-900 uppercase">
-                RUSH
-              </span>
+              <Image
+                src="/logo.png"
+                alt="BidsRush Logo"
+                width={120}
+                height={40}
+                style={{ height: "auto", width: "auto" }}
+              />
             </div>
 
             {/* Tagline */}

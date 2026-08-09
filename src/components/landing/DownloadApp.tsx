@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
@@ -125,14 +126,14 @@ export default function DownloadApp() {
         >
           {/* QR card */}
           <div className="bg-white rounded-2xl p-5 flex items-center gap-5 shadow-sm border border-gray-100">
-            {/* QR placeholder — blue gradient square */}
-            <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden">
-              <div
-                className="w-full h-full rounded-2xl"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #60a5fa 0%, #2563eb 100%)",
-                }}
+            {/* QR code image */}
+            <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden border border-gray-150 flex items-center justify-center bg-white">
+              <Image
+                src="/qr.png"
+                alt="Scan to Download QR"
+                width={80}
+                height={80}
+                className="w-full h-full object-contain"
               />
             </div>
             <div>
