@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,14 +51,16 @@ function LoginContent() {
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
-            <Zap size={20} className="text-white" />
-          </div>
-          <div>
-            <p className="text-lg font-bold text-slate-100">BidsRush</p>
-            <p className="text-xs text-slate-500">Admin Dashboard</p>
-          </div>
+        <div className="flex flex-col items-center justify-center gap-2 mb-8">
+          <Image
+            src="/logo.png"
+            alt="BidsRush Logo"
+            width={160}
+            height={48}
+            priority
+            style={{ height: "auto", width: "auto" }}
+          />
+          <span className="text-[11px] font-semibold text-slate-500 tracking-wider uppercase">Admin Dashboard</span>
         </div>
 
         {/* Card */}
