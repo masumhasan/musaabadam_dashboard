@@ -10,11 +10,11 @@ export default function Navbar() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
 
   const navLinks = [
-    "Explore",
-    "Live Now",
-    "Categories",
-    "How It Works",
-    "Sell on BidsRush",
+    { label: "Explore", href: "#explore" },
+    { label: "Live Now", href: "#live-now" },
+    { label: "Categories", href: "#categories" },
+    { label: "How It Works", href: "#how-it-works" },
+    { label: "Sell on BidsRush", href: "#sell-on-bidsrush" },
   ];
 
   // Handle scroll effect for navbar elevation
@@ -80,16 +80,16 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-7 xl:gap-9 flex-1 justify-center">
             {navLinks.map((link) => (
               <Link
-                href="/"
-                key={link}
+                href={link.href}
+                key={link.label}
                 className="relative text-sm font-semibold text-gray-700 whitespace-nowrap transition-all duration-200 hover:text-[#1877F2] group"
-                onMouseEnter={() => setHoveredLink(link)}
+                onMouseEnter={() => setHoveredLink(link.label)}
                 onMouseLeave={() => setHoveredLink(null)}
               >
-                {link}
+                {link.label}
                 <span
                   className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#1877F2] to-[#F5A623] transition-all duration-300 ease-out ${
-                    hoveredLink === link ? "w-full" : "w-0"
+                    hoveredLink === link.label ? "w-full" : "w-0"
                   }`}
                 />
               </Link>
@@ -150,12 +150,12 @@ export default function Navbar() {
         <div className="hidden md:flex lg:hidden items-center gap-6 px-6 py-3 border-t border-gray-100 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300">
           {navLinks.map((link, idx) => (
             <Link
-              href="/"
-              key={link}
+              href={link.href}
+              key={link.label}
               className="text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-200 hover:text-[#1877F2] hover:scale-105"
               style={{ animationDelay: `${idx * 0.05}s` }}
             >
-              {link}
+              {link.label}
             </Link>
           ))}
         </div>
@@ -201,8 +201,8 @@ export default function Navbar() {
         <nav className="flex flex-col px-5 py-6 gap-2 flex-1">
           {navLinks.map((link, idx) => (
             <Link
-              href="/"
-              key={link}
+              href={link.href}
+              key={link.label}
               className="flex items-center text-base font-semibold text-gray-700 py-3.5 px-4 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 hover:text-[#1877F2] transition-all duration-200 hover:translate-x-2 group"
               onClick={() => setMenuOpen(false)}
               style={{
@@ -213,7 +213,7 @@ export default function Navbar() {
                 transform: "translateX(20px)",
               }}
             >
-              <span>{link}</span>
+              <span>{link.label}</span>
               <svg
                 className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1"
                 fill="none"

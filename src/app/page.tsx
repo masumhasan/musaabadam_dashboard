@@ -14,14 +14,24 @@ export default function Home() {
     <>
       <Navbar />
       <div className="pt-8">
-        <Hero />
+        <div id="explore">
+          <Hero />
+        </div>
         <ContinuousSlider />
-        <HowItWorks />
-        <Categories />
-        <LiveNow />
+        <div id="how-it-works">
+          <HowItWorks />
+        </div>
+        <div id="categories">
+          <Categories />
+        </div>
+        <div id="live-now">
+          <LiveNow />
+        </div>
         <SellerCTA />
         <Testimonials />
-        <DownloadApp />
+        <div id="sell-on-bidsrush">
+          <DownloadApp />
+        </div>
         <Footer />
       </div>
     </>
