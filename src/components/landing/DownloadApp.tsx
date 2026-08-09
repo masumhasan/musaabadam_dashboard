@@ -127,13 +127,14 @@ export default function DownloadApp() {
           {/* QR card */}
           <div className="bg-white rounded-2xl p-5 flex items-center gap-5 shadow-sm border border-gray-100">
             {/* QR code image */}
-            <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden border border-gray-150 flex items-center justify-center bg-white">
+            <div className="w-24 h-24 flex-shrink-0 border border-gray-200 flex items-center justify-center bg-white p-2 shadow-xs transition-all duration-300 hover:scale-105">
               <Image
                 src="/qr.png"
                 alt="Scan to Download QR"
-                width={80}
-                height={80}
+                width={96}
+                height={96}
                 className="w-full h-full object-contain"
+                priority
               />
             </div>
             <div>
