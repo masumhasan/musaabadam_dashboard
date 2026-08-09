@@ -17,10 +17,21 @@ interface UserGrowthDataPoint {
 
 interface UserGrowthChartProps {
   data: UserGrowthDataPoint[];
+  timeframe?: string;
 }
 
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr + 'T00:00:00');
+function formatDate(dateStr: string, timeframe?: string) {
+  if (!dateStr) return '';
+  const hasTime = dateStr.includes('T');
+  const d = new Date(hasTime ? dateStr : dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dateStr;
+
+  if (timeframe === 'daily') {
+    return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+  if (timeframe === 'yearly' || timeframe === 'lifetime') {
+    return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+  }
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
@@ -28,13 +39,14 @@ interface CustomTooltipProps {
   active?: boolean;
   payload?: Array<{ value: number }>;
   label?: string;
+  timeframe?: string;
 }
 
-function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, label, timeframe }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 shadow-2xl text-sm">
-      <p className="mb-1 text-xs font-semibold text-slate-400">{label ? formatDate(label) : ''}</p>
+      <p className="mb-1 text-xs font-semibold text-slate-400">{label ? formatDate(label, timeframe) : ''}</p>
       <p className="font-semibold text-slate-100">
         <span className="text-slate-400">New users: </span>
         {payload[0].value}
@@ -43,7 +55,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   );
 }
 
-export function UserGrowthChart({ data }: UserGrowthChartProps) {
+export function UserGrowthChart({ data, timeframe }: UserGrowthChartProps) {
   if (!data.length) {
     return (
       <div className="flex h-48 items-center justify-center text-sm text-slate-500">
@@ -64,7 +76,7 @@ export function UserGrowthChart({ data }: UserGrowthChartProps) {
         <CartesianGrid stroke="var(--chart-grid)" strokeDasharray="4 4" vertical={false} />
         <XAxis
           dataKey="_id"
-          tickFormatter={formatDate}
+          tickFormatter={(tick) => formatDate(tick, timeframe)}
           tick={{ fill: '#64748b', fontSize: 11 }}
           axisLine={false}
           tickLine={false}
@@ -77,7 +89,7 @@ export function UserGrowthChart({ data }: UserGrowthChartProps) {
           width={32}
           allowDecimals={false}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#475569', strokeWidth: 1 }} />
+        <Tooltip content={<CustomTooltip timeframe={timeframe} />} cursor={{ stroke: '#475569', strokeWidth: 1 }} />
         <Line
           type="monotone"
           dataKey="newUsers"

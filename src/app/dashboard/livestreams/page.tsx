@@ -10,6 +10,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { PageLoader } from '@/components/ui/Spinner';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
+import { TimeframeFilter, Timeframe } from '@/components/ui/TimeframeFilter';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
 import api, { extractError } from '@/lib/api';
 
@@ -41,6 +42,7 @@ export default function LivestreamsPage() {
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState('');
+  const [timeframe, setTimeframe] = useState<Timeframe>('lifetime');
   const [error, setError] = useState('');
 
   // Edit States
@@ -50,10 +52,11 @@ export default function LivestreamsPage() {
   const [editStatus, setEditStatus] = useState('');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-streams', page, status],
+    queryKey: ['admin-streams', page, status, timeframe],
     queryFn: async () => {
       const params: Record<string, string | number> = { page, limit: 20 };
       if (status) params.status = status;
+      if (timeframe !== 'lifetime') params.timeframe = timeframe;
       const { data } = await api.get('/admin/streams', { params });
       return data.data as { streams: Stream[]; total: number; totalPages: number };
     },
@@ -97,17 +100,21 @@ export default function LivestreamsPage() {
     <ProtectedRoute permission={ADMIN_PERMISSIONS.TERMINATE_STREAMS}>
       <TopBar title="Livestream Monitoring" />
       <div className="p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <Radio size={18} className="text-slate-400" />
-          {STATUSES.map((s) => (
-            <button
-              key={s || 'all'}
-              onClick={() => { setStatus(s); setPage(1); }}
-              className={`rounded-full px-3 py-1 text-sm ${status === s ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300'}`}
-            >
-              {s === '' ? 'All' : s[0].toUpperCase() + s.slice(1)}
-            </button>
-          ))}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+          <div className="flex flex-wrap items-center gap-2">
+            <Radio size={18} className="text-slate-400 mr-1" />
+            <span className="text-xs text-slate-400 mr-1 font-medium">Status:</span>
+            {STATUSES.map((s) => (
+              <button
+                key={s || 'all'}
+                onClick={() => { setStatus(s); setPage(1); }}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${status === s ? 'bg-blue-600 text-white' : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300'}`}
+              >
+                {s === '' ? 'All' : s[0].toUpperCase() + s.slice(1)}
+              </button>
+            ))}
+          </div>
+          <TimeframeFilter value={timeframe} onChange={(val) => { setTimeframe(val); setPage(1); }} />
         </div>
 
         {error && <p className="mb-3 text-sm text-red-400">{error}</p>}

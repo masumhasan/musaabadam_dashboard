@@ -7,6 +7,7 @@ import { TopBar } from '@/components/layout/TopBar';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { Pagination } from '@/components/ui/Pagination';
 import { PageLoader } from '@/components/ui/Spinner';
+import { TimeframeFilter, Timeframe } from '@/components/ui/TimeframeFilter';
 import { ADMIN_PERMISSIONS } from '@/lib/constants';
 import api from '@/lib/api';
 
@@ -36,11 +37,13 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function TipsPage() {
   const [page, setPage] = useState(1);
+  const [timeframe, setTimeframe] = useState<Timeframe>('lifetime');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-tips', page],
+    queryKey: ['admin-tips', page, timeframe],
     queryFn: async () => {
-      const params = { page, limit: 20 };
+      const params: Record<string, string | number> = { page, limit: 20 };
+      if (timeframe !== 'lifetime') params.timeframe = timeframe;
       const { data } = await api.get('/admin/tips', { params });
       return data.data as { tips: Tip[]; total: number; totalPages: number; totalAmount: number };
     },
@@ -50,9 +53,12 @@ export default function TipsPage() {
     <ProtectedRoute permission={ADMIN_PERMISSIONS.VIEW_ANALYTICS}>
       <TopBar title="Tips Platform Activity" />
       <div className="p-6">
-        <div className="mb-6 flex items-center gap-2">
-          <Banknote size={18} className="text-slate-400" />
-          <h2 className="text-lg font-semibold text-slate-200">Tips Log</h2>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2">
+            <Banknote size={18} className="text-slate-400" />
+            <h2 className="text-sm font-semibold text-slate-200">Tips Log</h2>
+          </div>
+          <TimeframeFilter value={timeframe} onChange={(val) => { setTimeframe(val); setPage(1); }} />
         </div>
 
         {data && (

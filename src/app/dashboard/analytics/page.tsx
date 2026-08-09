@@ -22,6 +22,7 @@ import { RevenueChart, ChartSkeleton } from '@/components/analytics/RevenueChart
 import { UserGrowthChart } from '@/components/analytics/UserGrowthChart';
 import { StreamsChart } from '@/components/analytics/StreamsChart';
 import { RecentOrdersTable } from '@/components/analytics/RecentOrdersTable';
+import { TimeframeFilter, Timeframe } from '@/components/ui/TimeframeFilter';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -61,38 +62,6 @@ interface StreamTrend {
 
 // ─── Period Toggles ───────────────────────────────────────────────────────────
 
-const PERIODS = [
-  { label: '7D',  days: 7 },
-  { label: '30D', days: 30 },
-  { label: '90D', days: 90 },
-];
-
-function PeriodToggle({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (d: number) => void;
-}) {
-  return (
-    <div className="flex rounded-lg border border-slate-800 bg-slate-900 p-0.5 text-xs font-medium">
-      {PERIODS.map((p) => (
-        <button
-          key={p.days}
-          onClick={() => onChange(p.days)}
-          className={`rounded-md px-3 py-1.5 transition-colors ${
-            value === p.days
-              ? 'bg-blue-600 text-white shadow'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          {p.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 // ─── Section Header ───────────────────────────────────────────────────────────
 
 function SectionHeader({
@@ -127,16 +96,24 @@ function ChartCard({ children }: { children: React.ReactNode }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
+function getTimeframeText(tf: Timeframe) {
+  switch (tf) {
+    case 'daily': return 'today';
+    case 'weekly': return 'this week';
+    case 'monthly': return 'this month';
+    case 'yearly': return 'this year';
+    case 'lifetime': return 'all time';
+  }
+}
+
 export default function AnalyticsPage() {
-  const [revenueDays, setRevenueDays] = useState(30);
-  const [usersDays, setUsersDays] = useState(30);
-  const [streamsDays, setStreamsDays] = useState(30);
+  const [timeframe, setTimeframe] = useState<Timeframe>('monthly');
 
   // Overview KPIs
   const overviewQuery = useQuery({
-    queryKey: ['admin-analytics-overview'],
+    queryKey: ['admin-analytics-overview', timeframe],
     queryFn: async () => {
-      const { data } = await api.get('/analytics/admin/overview');
+      const { data } = await api.get('/analytics/admin/overview', { params: { timeframe } });
       return data.data as AdminOverview;
     },
     staleTime: 60_000,
@@ -144,38 +121,40 @@ export default function AnalyticsPage() {
 
   // Revenue & Orders trend
   const revenueQuery = useQuery({
-    queryKey: ['admin-analytics-revenue', revenueDays],
+    queryKey: ['admin-analytics-revenue', timeframe],
     queryFn: async () => {
-      const { data } = await api.get('/analytics/admin/revenue', { params: { days: revenueDays } });
+      const { data } = await api.get('/analytics/admin/revenue', { params: { timeframe } });
       return data.data as RevenueTrend[];
     },
   });
 
   // User registrations trend
   const usersQuery = useQuery({
-    queryKey: ['admin-analytics-users', usersDays],
+    queryKey: ['admin-analytics-users', timeframe],
     queryFn: async () => {
-      const { data } = await api.get('/analytics/admin/users-trend', { params: { days: usersDays } });
+      const { data } = await api.get('/analytics/admin/users-trend', { params: { timeframe } });
       return data.data as UserTrend[];
     },
   });
 
   // Streams activity trend
   const streamsQuery = useQuery({
-    queryKey: ['admin-analytics-streams', streamsDays],
+    queryKey: ['admin-analytics-streams', timeframe],
     queryFn: async () => {
-      const { data } = await api.get('/analytics/admin/streams-trend', { params: { days: streamsDays } });
+      const { data } = await api.get('/analytics/admin/streams-trend', { params: { timeframe } });
       return data.data as StreamTrend[];
     },
   });
 
   const overview = overviewQuery.data;
 
-  // Compute total revenue in selected trend period for subtitle
+  // Compute totals
   const periodRevenue = (revenueQuery.data ?? []).reduce((s, d) => s + d.revenue, 0);
   const periodOrders  = (revenueQuery.data ?? []).reduce((s, d) => s + d.orders, 0);
   const periodUsers   = (usersQuery.data ?? []).reduce((s, d) => s + d.newUsers, 0);
   const periodStreams  = (streamsQuery.data ?? []).reduce((s, d) => s + d.newStreams, 0);
+
+  const isFetchingAny = overviewQuery.isFetching || revenueQuery.isFetching || usersQuery.isFetching || streamsQuery.isFetching;
 
   return (
     <ProtectedRoute permission={ADMIN_PERMISSIONS.VIEW_ANALYTICS}>
@@ -183,21 +162,35 @@ export default function AnalyticsPage() {
 
       <div className="space-y-8 p-6">
 
+        {/* ── Global Filter Bar ────────────────────────────────────────── */}
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2">
+            <TrendingUp size={18} className="text-blue-500" />
+            <span className="text-sm font-semibold text-slate-200">Timeframe Filter</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <TimeframeFilter value={timeframe} onChange={setTimeframe} showIcon={false} />
+            <button
+              onClick={() => {
+                overviewQuery.refetch();
+                revenueQuery.refetch();
+                usersQuery.refetch();
+                streamsQuery.refetch();
+              }}
+              disabled={isFetchingAny}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200 disabled:opacity-50"
+            >
+              <RefreshCw size={12} className={isFetchingAny ? 'animate-spin' : ''} />
+              Refresh
+            </button>
+          </div>
+        </div>
+
         {/* ── KPI Cards ─────────────────────────────────────────────────── */}
         <section>
           <SectionHeader
             title="Platform Overview"
-            subtitle="Live snapshot of key platform metrics"
-            action={
-              <button
-                onClick={() => overviewQuery.refetch()}
-                disabled={overviewQuery.isFetching}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-800 px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200 disabled:opacity-50"
-              >
-                <RefreshCw size={12} className={overviewQuery.isFetching ? 'animate-spin' : ''} />
-                Refresh
-              </button>
-            }
+            subtitle="Snapshot of key platform metrics"
           />
 
           {overviewQuery.isError ? (
@@ -215,14 +208,14 @@ export default function AnalyticsPage() {
                     value={overview?.totalUsers.toLocaleString() ?? '0'}
                     icon={Users}
                     accent="blue"
-                    sub="Registered accounts"
+                    sub={timeframe === 'lifetime' ? 'All time registered' : 'New registered'}
                   />
                   <KpiCard
                     label="Total Sellers"
                     value={overview?.totalSellers.toLocaleString() ?? '0'}
                     icon={Store}
                     accent="purple"
-                    sub="Approved sellers"
+                    sub={timeframe === 'lifetime' ? 'All time approved' : 'New approved'}
                   />
                   <KpiCard
                     label="Total Revenue"
@@ -236,7 +229,7 @@ export default function AnalyticsPage() {
                     value={overview?.totalOrders.toLocaleString() ?? '0'}
                     icon={ShoppingBag}
                     accent="amber"
-                    sub="All time"
+                    sub="Paid & pending"
                   />
                   <KpiCard
                     label="Live Now"
@@ -250,7 +243,7 @@ export default function AnalyticsPage() {
                     value={overview?.totalStreams.toLocaleString() ?? '0'}
                     icon={Video}
                     accent="indigo"
-                    sub="All time"
+                    sub={timeframe === 'lifetime' ? 'All time started' : 'New started'}
                   />
                 </>
               )}
@@ -265,10 +258,9 @@ export default function AnalyticsPage() {
               title="Revenue & Orders"
               subtitle={
                 revenueQuery.isSuccess
-                  ? `£${periodRevenue.toLocaleString('en-GB', { minimumFractionDigits: 2 })} revenue · ${periodOrders} orders in last ${revenueDays}d`
-                  : 'Daily revenue (area) and order count (bars)'
+                  ? `£${periodRevenue.toLocaleString('en-GB', { minimumFractionDigits: 2 })} revenue · ${periodOrders} orders ${getTimeframeText(timeframe)}`
+                  : 'Revenue (area) and order count (bars)'
               }
-              action={<PeriodToggle value={revenueDays} onChange={setRevenueDays} />}
             />
             {revenueQuery.isLoading ? (
               <ChartSkeleton height={260} />
@@ -277,7 +269,7 @@ export default function AnalyticsPage() {
                 Failed to load revenue data.
               </div>
             ) : (
-              <RevenueChart data={revenueQuery.data ?? []} />
+              <RevenueChart data={revenueQuery.data ?? []} timeframe={timeframe} />
             )}
           </ChartCard>
         </section>
@@ -291,14 +283,8 @@ export default function AnalyticsPage() {
               title="User Growth"
               subtitle={
                 usersQuery.isSuccess
-                  ? `${periodUsers} new users in last ${usersDays}d`
-                  : 'Daily new registrations'
-              }
-              action={
-                <div className="flex items-center gap-2">
-                  <TrendingUp size={14} className="text-green-400" />
-                  <PeriodToggle value={usersDays} onChange={setUsersDays} />
-                </div>
+                  ? `${periodUsers} new users ${getTimeframeText(timeframe)}`
+                  : 'New registrations'
               }
             />
             {usersQuery.isLoading ? (
@@ -308,7 +294,7 @@ export default function AnalyticsPage() {
                 Failed to load user trend.
               </div>
             ) : (
-              <UserGrowthChart data={usersQuery.data ?? []} />
+              <UserGrowthChart data={usersQuery.data ?? []} timeframe={timeframe} />
             )}
           </ChartCard>
 
@@ -318,14 +304,8 @@ export default function AnalyticsPage() {
               title="Stream Activity"
               subtitle={
                 streamsQuery.isSuccess
-                  ? `${periodStreams} streams started in last ${streamsDays}d`
-                  : 'Daily new livestreams created'
-              }
-              action={
-                <div className="flex items-center gap-2">
-                  <TrendingDown size={14} className="text-orange-400" />
-                  <PeriodToggle value={streamsDays} onChange={setStreamsDays} />
-                </div>
+                  ? `${periodStreams} streams started ${getTimeframeText(timeframe)}`
+                  : 'New livestreams created'
               }
             />
             {streamsQuery.isLoading ? (
@@ -335,7 +315,7 @@ export default function AnalyticsPage() {
                 Failed to load streams trend.
               </div>
             ) : (
-              <StreamsChart data={streamsQuery.data ?? []} />
+              <StreamsChart data={streamsQuery.data ?? []} timeframe={timeframe} />
             )}
           </ChartCard>
         </section>
