@@ -81,6 +81,17 @@ export type ListingType = 'auction' | 'buy_it_now' | 'giveaway';
 export type ProductStatus = 'draft' | 'active' | 'inactive' | 'sold_out' | 'reserved' | 'ended';
 export type ProductCondition = 'new' | 'like_new' | 'excellent' | 'good' | 'fair';
 
+export interface ProductVariant {
+  _id?: string;
+  name: string;
+  image?: string;
+  quantity: number;
+  quantitySold?: number;
+  sku?: string;
+  color?: string;
+  size?: string;
+}
+
 export interface ProductSeller {
   _id: string;
   username: string;
@@ -105,6 +116,7 @@ export interface Product {
   quantity: number;
   quantitySold: number;
   images: string[];
+  variants?: ProductVariant[];
   flashSale: boolean;
   acceptOffers: boolean;
   reserveForLive: boolean;

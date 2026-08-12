@@ -137,6 +137,7 @@ export default function ProductsPage() {
                   <th className="px-4 py-3 font-medium">Category</th>
                   <th className="px-4 py-3 font-medium">Type</th>
                   <th className="px-4 py-3 font-medium">Price</th>
+                  <th className="px-4 py-3 font-medium">Stock / Variants</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Listed</th>
                   <th className="px-4 py-3 font-medium text-right">Actions</th>
@@ -162,6 +163,19 @@ export default function ProductsPage() {
                       <Badge variant="default">{product.listingType.replace('_', ' ')}</Badge>
                     </td>
                     <td className="px-4 py-3 text-slate-300 font-mono text-xs">{priceLabel(product)}</td>
+                    <td className="px-4 py-3 text-slate-300">
+                      <div className="flex flex-col text-xs">
+                        <span className="font-medium text-slate-200">{product.quantity} in stock</span>
+                        {product.variants && product.variants.length > 0 ? (
+                          <span className="text-blue-400 text-[11px]">
+                            {product.variants.length} {product.variants.length === 1 ? 'variant' : 'variants'} (
+                            {product.variants.map((v) => `${v.name}: ${v.quantity}`).join(', ')})
+                          </span>
+                        ) : (
+                          <span className="text-slate-500 text-[11px]">No variants</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <Badge variant={STATUS_VARIANT[product.status] ?? 'default'}>
                         {product.status.replace('_', ' ')}
@@ -191,7 +205,7 @@ export default function ProductsPage() {
                 ))}
                 {!isLoading && data?.products?.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan={9} className="px-4 py-8 text-center text-slate-500">
                       No products match your filters.
                     </td>
                   </tr>
