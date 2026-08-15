@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ToggleLeft, ToggleRight, Search } from 'lucide-react';
+import { ToggleLeft, ToggleRight, Search, AlertTriangle } from 'lucide-react';
 import { TopBar } from '@/components/layout/TopBar';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { Button } from '@/components/ui/Button';
@@ -154,7 +154,21 @@ export default function ProductsPage() {
                         ) : (
                           <div className="h-9 w-9 rounded bg-slate-700 flex-shrink-0" />
                         )}
-                        <p className="font-medium text-slate-200 truncate">{product.title}</p>
+                        <div className="truncate">
+                          <p className="font-medium text-slate-200 truncate flex items-center gap-1">
+                            {product.title}
+                            {product.hazardousMaterials && (
+                              <span title="Hazardous Materials" className="inline-flex items-center text-amber-400">
+                                <AlertTriangle size={14} />
+                              </span>
+                            )}
+                          </p>
+                          {product.hazardousMaterials && (
+                            <span className="text-[10px] font-semibold text-amber-400/90 uppercase tracking-wider block">
+                              Hazardous
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-slate-400">{sellerName(product)}</td>
