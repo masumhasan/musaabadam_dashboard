@@ -25,14 +25,14 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className={cn('relative z-10 w-full max-w-md rounded-xl bg-slate-900 border border-slate-700 shadow-2xl', className)}>
-        <div className="flex items-center justify-between border-b border-slate-700 px-6 py-4">
+      <div className={cn('relative z-10 w-full max-w-md rounded-xl bg-slate-900 border border-slate-700 shadow-2xl max-h-[90vh] flex flex-col', className)}>
+        <div className="flex items-center justify-between border-b border-slate-700 px-6 py-4 flex-shrink-0">
           <h2 className="text-base font-semibold text-slate-100">{title}</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-200 transition-colors">
             <X size={18} />
           </button>
         </div>
-        <div className="px-6 py-4">{children}</div>
+        <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   );

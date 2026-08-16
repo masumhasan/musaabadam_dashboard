@@ -91,9 +91,9 @@ export default function UsersPage() {
   return (
     <ProtectedRoute permission={ADMIN_PERMISSIONS.VIEW_USERS}>
       <TopBar title="Users" subtitle="Manage platform accounts" />
-      <div className="p-6 space-y-4">
+      <div className="p-4 md:p-6 space-y-4">
         {/* Filters */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1 min-w-48">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
@@ -103,83 +103,142 @@ export default function UsersPage() {
               className="w-full rounded-lg border border-slate-700 bg-slate-800 pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <select
-            value={role}
-            onChange={(e) => { setRole(e.target.value); setPage(1); }}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All roles</option>
-            {Object.entries(USER_ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-          </select>
-          <select
-            value={status}
-            onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">All statuses</option>
-            <option value="active">Active</option>
-            <option value="banned">Banned</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          <div className="flex flex-wrap gap-2 sm:gap-3">
+            <select
+              value={role}
+              onChange={(e) => { setRole(e.target.value); setPage(1); }}
+              className="flex-1 sm:flex-initial rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All roles</option>
+              {Object.entries(USER_ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+            <select
+              value={status}
+              onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+              className="flex-1 sm:flex-initial rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All statuses</option>
+              <option value="active">Active</option>
+              <option value="banned">Banned</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
         </div>
 
         {/* Table */}
         <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
           {isLoading ? <PageLoader /> : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-800 text-left text-slate-400">
-                  <th className="px-4 py-3 font-medium">User</th>
-                  <th className="px-4 py-3 font-medium">Referral Code</th>
-                  <th className="px-4 py-3 font-medium">Role</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Joined</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
+            <>
+              {/* Mobile View */}
+              <div className="block md:hidden divide-y divide-slate-800">
                 {data?.users?.map((user) => {
                   const { label, variant } = userStatusBadge(user);
                   return (
-                    <tr key={user._id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="px-4 py-3">
-                        <p className="font-medium text-slate-200">{user.displayName || user.username}</p>
-                        <p className="text-slate-500 text-xs">{user.email}</p>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs text-slate-300">{user.referralCode || '—'}</td>
-                      <td className="px-4 py-3 text-slate-400">{USER_ROLE_LABELS[user.role] ?? user.role}</td>
-                      <td className="px-4 py-3"><Badge variant={variant}>{label}</Badge></td>
-                      <td className="px-4 py-3 text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-1">
-                          {(user.isBanned || user.isSuspended || !user.isActive) ? (
-                            <Button size="sm" variant="ghost" loading={activateMut.isPending}
-                              onClick={() => activateMut.mutate(user._id)}>
-                              <UserCheck size={14} /> Activate
-                            </Button>
-                          ) : (
-                            <>
-                              <Button size="sm" variant="ghost"
-                                onClick={() => { setModal({ type: 'suspend', user }); setActionError(''); }}>
-                                <UserX size={14} /> Suspend
-                              </Button>
-                              <Button size="sm" variant="ghost"
-                                onClick={() => { setModal({ type: 'ban', user }); setActionError(''); }}>
-                                <Ban size={14} /> Ban
-                              </Button>
-                            </>
-                          )}
-                          <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300"
-                            onClick={() => { setModal({ type: 'delete', user }); setActionError(''); }}>
-                            <Trash2 size={14} /> Delete
-                          </Button>
+                    <div key={user._id} className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-slate-200 text-sm">{user.displayName || user.username}</p>
+                          <p className="text-slate-500 text-xs">{user.email}</p>
                         </div>
-                      </td>
-                    </tr>
+                        <Badge variant={variant}>{label}</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-y-2 text-xs border-t border-slate-800/40 pt-2.5">
+                        <span className="text-slate-500">Referral Code</span>
+                        <span className="font-mono text-slate-300 text-right">{user.referralCode || '—'}</span>
+                        <span className="text-slate-500">Role</span>
+                        <span className="text-slate-400 text-right">{USER_ROLE_LABELS[user.role] ?? user.role}</span>
+                        <span className="text-slate-500">Joined</span>
+                        <span className="text-slate-400 text-right">{new Date(user.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-800/50 justify-end">
+                        {(user.isBanned || user.isSuspended || !user.isActive) ? (
+                          <Button size="sm" variant="ghost" loading={activateMut.isPending}
+                            onClick={() => activateMut.mutate(user._id)}>
+                            <UserCheck size={14} /> Activate
+                          </Button>
+                        ) : (
+                          <>
+                            <Button size="sm" variant="ghost"
+                              onClick={() => { setModal({ type: 'suspend', user }); setActionError(''); }}>
+                              <UserX size={14} /> Suspend
+                            </Button>
+                            <Button size="sm" variant="ghost"
+                              onClick={() => { setModal({ type: 'ban', user }); setActionError(''); }}>
+                              <Ban size={14} /> Ban
+                            </Button>
+                          </>
+                        )}
+                        <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300"
+                          onClick={() => { setModal({ type: 'delete', user }); setActionError(''); }}>
+                          <Trash2 size={14} /> Delete
+                        </Button>
+                      </div>
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
+                {data?.users?.length === 0 && (
+                  <p className="py-8 text-center text-slate-500 text-sm">No users found.</p>
+                )}
+              </div>
+
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-left text-slate-400">
+                      <th className="px-4 py-3 font-medium">User</th>
+                      <th className="px-4 py-3 font-medium">Referral Code</th>
+                      <th className="px-4 py-3 font-medium">Role</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium">Joined</th>
+                      <th className="px-4 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {data?.users?.map((user) => {
+                      const { label, variant } = userStatusBadge(user);
+                      return (
+                        <tr key={user._id} className="hover:bg-slate-800/40 transition-colors">
+                          <td className="px-4 py-3">
+                            <p className="font-medium text-slate-200">{user.displayName || user.username}</p>
+                            <p className="text-slate-500 text-xs">{user.email}</p>
+                          </td>
+                          <td className="px-4 py-3 font-mono text-xs text-slate-300">{user.referralCode || '—'}</td>
+                          <td className="px-4 py-3 text-slate-400">{USER_ROLE_LABELS[user.role] ?? user.role}</td>
+                          <td className="px-4 py-3"><Badge variant={variant}>{label}</Badge></td>
+                          <td className="px-4 py-3 text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex justify-end gap-1">
+                              {(user.isBanned || user.isSuspended || !user.isActive) ? (
+                                <Button size="sm" variant="ghost" loading={activateMut.isPending}
+                                  onClick={() => activateMut.mutate(user._id)}>
+                                  <UserCheck size={14} /> Activate
+                                </Button>
+                              ) : (
+                                <>
+                                  <Button size="sm" variant="ghost"
+                                    onClick={() => { setModal({ type: 'suspend', user }); setActionError(''); }}>
+                                    <UserX size={14} /> Suspend
+                                  </Button>
+                                  <Button size="sm" variant="ghost"
+                                    onClick={() => { setModal({ type: 'ban', user }); setActionError(''); }}>
+                                    <Ban size={14} /> Ban
+                                  </Button>
+                                </>
+                              )}
+                              <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300"
+                                onClick={() => { setModal({ type: 'delete', user }); setActionError(''); }}>
+                                <Trash2 size={14} /> Delete
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
           {data && (
             <div className="border-t border-slate-800 px-4">

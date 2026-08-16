@@ -24,16 +24,16 @@ export function KpiCard({ label, value, icon: Icon, accent, sub }: KpiCardProps)
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-lg ${styles.glow} transition-transform duration-200 hover:-translate-y-0.5 hover:border-slate-700`}
+      className={`relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:p-5 shadow-lg ${styles.glow} transition-transform duration-200 hover:-translate-y-0.5 hover:border-slate-700`}
     >
       {/* Background glow orb */}
       <div className={`absolute -right-4 -top-4 h-20 w-20 rounded-full ${styles.bg} blur-2xl`} />
 
       <div className="relative flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold tabular-nums text-slate-100">{value}</p>
-          {sub && <p className="mt-1 text-xs text-slate-500">{sub}</p>}
+          <p className="text-[10px] sm:text-xs font-medium uppercase tracking-widest text-slate-500">{label}</p>
+          <p className="mt-2 text-xl sm:text-3xl font-bold tabular-nums text-slate-100">{value}</p>
+          {sub && <p className="mt-1 text-[10px] sm:text-xs text-slate-500">{sub}</p>}
         </div>
         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${styles.bg}`}>
           <Icon size={20} className={styles.icon} />

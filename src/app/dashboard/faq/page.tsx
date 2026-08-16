@@ -143,9 +143,9 @@ export default function FAQPage() {
         }
       />
 
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         {/* Tabs */}
-        <div className="flex gap-1 border-b border-slate-800 mb-6">
+        <div className="flex gap-1 border-b border-slate-800 mb-6 overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
           {(['seller', 'global'] as FaqType[]).map((tab) => (
             <button
               key={tab}
@@ -169,51 +169,90 @@ export default function FAQPage() {
           {isLoading ? (
             <PageLoader />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-800 text-left text-slate-400 font-medium">
-                    <th className="px-4 py-3 w-1/4">Question</th>
-                    <th className="px-4 py-3 w-1/2">Answer</th>
-                    <th className="px-4 py-3 w-12 text-center">Order</th>
-                    <th className="px-4 py-3 text-right w-24">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800">
-                  {faqs.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
-                        No FAQs created yet for this category.
-                      </td>
+            <>
+              {/* Mobile View */}
+              <div className="block md:hidden divide-y divide-slate-800">
+                {faqs.map((faq) => (
+                  <div key={faq._id} className="p-4 space-y-2.5">
+                    <div>
+                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Question</span>
+                      <p className="font-semibold text-slate-200 text-sm mt-0.5 whitespace-pre-wrap">{faq.question}</p>
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Answer</span>
+                      <p className="text-slate-400 text-sm mt-0.5 whitespace-pre-wrap">{faq.answer}</p>
+                    </div>
+                    <div className="flex items-center justify-between text-xs border-t border-slate-800/40 pt-2">
+                      <span className="text-slate-500">Order: {faq.order}</span>
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => openEditModal(faq)}
+                          className="p-1.5 text-slate-400 hover:text-blue-400 transition-colors rounded hover:bg-slate-800 border border-slate-800"
+                        >
+                          <Pencil size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(faq._id, faq.question)}
+                          className="p-1.5 text-slate-400 hover:text-red-400 transition-colors rounded hover:bg-slate-800 border border-slate-800"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {faqs.length === 0 && (
+                  <p className="py-8 text-center text-slate-500 text-sm">No FAQs created yet for this category.</p>
+                )}
+              </div>
+
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-left text-slate-400 font-medium">
+                      <th className="px-4 py-3 w-1/4">Question</th>
+                      <th className="px-4 py-3 w-1/2">Answer</th>
+                      <th className="px-4 py-3 w-12 text-center">Order</th>
+                      <th className="px-4 py-3 text-right w-24">Actions</th>
                     </tr>
-                  ) : (
-                    faqs.map((faq) => (
-                      <tr key={faq._id} className="hover:bg-slate-800/40 transition-colors">
-                        <td className="px-4 py-3 text-slate-200 font-medium align-top whitespace-pre-wrap">{faq.question}</td>
-                        <td className="px-4 py-3 text-slate-400 align-top whitespace-pre-wrap">{faq.answer}</td>
-                        <td className="px-4 py-3 text-slate-500 text-center align-top">{faq.order}</td>
-                        <td className="px-4 py-3 text-right align-top">
-                          <div className="flex justify-end gap-1.5">
-                            <button
-                              onClick={() => openEditModal(faq)}
-                              className="p-1.5 text-slate-400 hover:text-blue-400 transition-colors rounded hover:bg-slate-800"
-                            >
-                              <Pencil size={15} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(faq._id, faq.question)}
-                              className="p-1.5 text-slate-400 hover:text-red-400 transition-colors rounded hover:bg-slate-800"
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {faqs.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                          No FAQs created yet for this category.
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    ) : (
+                      faqs.map((faq) => (
+                        <tr key={faq._id} className="hover:bg-slate-800/40 transition-colors">
+                          <td className="px-4 py-3 text-slate-200 font-medium align-top whitespace-pre-wrap">{faq.question}</td>
+                          <td className="px-4 py-3 text-slate-400 align-top whitespace-pre-wrap">{faq.answer}</td>
+                          <td className="px-4 py-3 text-slate-500 text-center align-top">{faq.order}</td>
+                          <td className="px-4 py-3 text-right align-top">
+                            <div className="flex justify-end gap-1.5">
+                              <button
+                                onClick={() => openEditModal(faq)}
+                                className="p-1.5 text-slate-400 hover:text-blue-400 transition-colors rounded hover:bg-slate-800"
+                              >
+                                <Pencil size={15} />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(faq._id, faq.question)}
+                                className="p-1.5 text-slate-400 hover:text-red-400 transition-colors rounded hover:bg-slate-800"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>

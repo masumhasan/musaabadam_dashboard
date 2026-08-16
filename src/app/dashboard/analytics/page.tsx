@@ -160,16 +160,18 @@ export default function AnalyticsPage() {
     <ProtectedRoute permission={ADMIN_PERMISSIONS.VIEW_ANALYTICS}>
       <TopBar title="Analytics" subtitle="Platform performance metrics" />
 
-      <div className="space-y-8 p-6">
+      <div className="space-y-8 p-4 md:p-6">
 
         {/* ── Global Filter Bar ────────────────────────────────────────── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
             <TrendingUp size={18} className="text-blue-500" />
             <span className="text-sm font-semibold text-slate-200">Timeframe Filter</span>
           </div>
-          <div className="flex items-center gap-4">
-            <TimeframeFilter value={timeframe} onChange={setTimeframe} showIcon={false} />
+          <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+            <div className="overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
+              <TimeframeFilter value={timeframe} onChange={setTimeframe} showIcon={false} />
+            </div>
             <button
               onClick={() => {
                 overviewQuery.refetch();
@@ -178,7 +180,7 @@ export default function AnalyticsPage() {
                 streamsQuery.refetch();
               }}
               disabled={isFetchingAny}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200 disabled:opacity-50 flex-shrink-0"
             >
               <RefreshCw size={12} className={isFetchingAny ? 'animate-spin' : ''} />
               Refresh

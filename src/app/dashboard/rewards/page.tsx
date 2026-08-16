@@ -97,17 +97,17 @@ export default function RewardsPage() {
     <ProtectedRoute>
       <div className="flex h-screen flex-col bg-slate-950 text-slate-100">
         <TopBar title="Rewards & Coupons Management" />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="flex items-center justify-between mb-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">System Rewards</h1>
-              <p className="text-sm text-slate-400">Issue discount coupons to users and view rewards list.</p>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">System Rewards</h1>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">Issue discount coupons to users and view rewards list.</p>
             </div>
             <div className="flex gap-2">
-              <Button onClick={() => refetch()} variant="secondary" className="flex items-center gap-1">
+              <Button onClick={() => refetch()} variant="secondary" className="flex-1 sm:flex-initial flex items-center justify-center gap-1 text-xs sm:text-sm">
                 <RefreshCw size={16} /> Refresh
               </Button>
-              <Button onClick={() => setIsAddModalOpen(true)} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500">
+              <Button onClick={() => setIsAddModalOpen(true)} className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-xs sm:text-sm">
                 <Plus size={16} /> Issue Coupon
               </Button>
             </div>
@@ -117,85 +117,147 @@ export default function RewardsPage() {
             <PageLoader />
           ) : (
             <div className="rounded-lg border border-slate-800 bg-slate-900 overflow-hidden">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-800 bg-slate-900/50 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    <th className="px-5 py-4">Title / Code</th>
-                    <th className="px-5 py-4">Recipient User</th>
-                    <th className="px-5 py-4">Discount</th>
-                    <th className="px-5 py-4">Min Spend</th>
-                    <th className="px-5 py-4">Status</th>
-                    <th className="px-5 py-4">Expiry Date</th>
-                    <th className="px-5 py-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800 text-sm text-slate-300">
-                  {rewardsData?.map((reward) => {
-                    const isExpired = new Date(reward.expiresAt) < new Date();
-                    return (
-                      <tr key={reward._id} className="hover:bg-slate-800/40">
-                        <td className="px-5 py-4">
-                          <div>
-                            <p className="font-semibold text-slate-100">{reward.title}</p>
-                            <span className="inline-flex items-center gap-1 mt-1 text-xs font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
-                              <Ticket size={12} /> {reward.code}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-4">
-                          {reward.userId ? (
-                            <div>
-                              <p className="font-medium">@{reward.userId.username}</p>
-                              <p className="text-xs text-slate-500">{reward.userId.email}</p>
-                            </div>
-                          ) : (
-                            <span className="text-slate-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-5 py-4 font-semibold text-slate-200">
+              {/* Mobile View */}
+              <div className="block md:hidden divide-y divide-slate-800">
+                {rewardsData?.map((reward) => {
+                  const isExpired = new Date(reward.expiresAt) < new Date();
+                  return (
+                    <div key={reward._id} className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-slate-100 text-sm">{reward.title}</p>
+                          <span className="inline-flex items-center gap-1 mt-1 text-[11px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                            <Ticket size={12} /> {reward.code}
+                          </span>
+                        </div>
+                        {reward.isUsed ? (
+                          <Badge variant="success" className="bg-emerald-950/40 text-emerald-400 border-emerald-900">Used</Badge>
+                        ) : isExpired ? (
+                          <Badge variant="danger" className="bg-rose-950/40 text-rose-400 border-rose-900">Expired</Badge>
+                        ) : (
+                          <Badge variant="info" className="bg-blue-950/40 text-blue-400 border-blue-900">Active</Badge>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-y-2 text-xs border-t border-slate-800/40 pt-2.5">
+                        <span className="text-slate-500">Recipient User</span>
+                        <span className="text-slate-300 text-right">
+                          {reward.userId ? `@${reward.userId.username}` : '—'}
+                        </span>
+                        <span className="text-slate-500">Discount</span>
+                        <span className="font-semibold text-slate-200 text-right">
                           {reward.discountType === 'fixed' ? `£${reward.discountValue}` : `${reward.discountValue}%`}
-                        </td>
-                        <td className="px-5 py-4">
-                          £{reward.minOrderValue.toFixed(2)}
-                        </td>
-                        <td className="px-5 py-4">
-                          {reward.isUsed ? (
-                            <Badge variant="success" className="bg-emerald-950/40 text-emerald-400 border-emerald-900">Used</Badge>
-                          ) : isExpired ? (
-                            <Badge variant="danger" className="bg-rose-950/40 text-rose-400 border-rose-900">Expired</Badge>
-                          ) : (
-                            <Badge variant="info" className="bg-blue-950/40 text-blue-400 border-blue-900">Active</Badge>
-                          )}
-                        </td>
-                        <td className="px-5 py-4 text-xs text-slate-400">
-                          {new Date(reward.expiresAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-5 py-4 text-right">
-                          <Button
-                            variant="ghost"
-                            onClick={() => {
-                              if (confirm('Are you sure you want to revoke this coupon?')) {
-                                deleteMutation.mutate(reward._id);
-                              }
-                            }}
-                            className="text-rose-500 hover:text-rose-400 hover:bg-rose-950/20 p-1.5"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
+                        </span>
+                        <span className="text-slate-500">Min Spend</span>
+                        <span className="text-slate-300 text-right">£{reward.minOrderValue.toFixed(2)}</span>
+                        <span className="text-slate-500">Expiry Date</span>
+                        <span className="text-slate-400 text-right">{new Date(reward.expiresAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex justify-end pt-2 border-t border-slate-800/50">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            if (confirm('Are you sure you want to revoke this coupon?')) {
+                              deleteMutation.mutate(reward._id);
+                            }
+                          }}
+                          className="text-rose-500 hover:text-rose-400 hover:bg-rose-950/20 p-1.5"
+                        >
+                          <Trash2 size={16} /> <span className="ml-1 text-xs">Revoke</span>
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+                {!rewardsData?.length && (
+                  <div className="text-center py-10 text-slate-500">
+                    <Gift className="mx-auto mb-2 text-slate-600" size={32} />
+                    No coupons issued yet.
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-800 bg-slate-900/50 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      <th className="px-5 py-4">Title / Code</th>
+                      <th className="px-5 py-4">Recipient User</th>
+                      <th className="px-5 py-4">Discount</th>
+                      <th className="px-5 py-4">Min Spend</th>
+                      <th className="px-5 py-4">Status</th>
+                      <th className="px-5 py-4">Expiry Date</th>
+                      <th className="px-5 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800 text-sm text-slate-300">
+                    {rewardsData?.map((reward) => {
+                      const isExpired = new Date(reward.expiresAt) < new Date();
+                      return (
+                        <tr key={reward._id} className="hover:bg-slate-800/40">
+                          <td className="px-5 py-4">
+                            <div>
+                              <p className="font-semibold text-slate-100">{reward.title}</p>
+                              <span className="inline-flex items-center gap-1 mt-1 text-xs font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                                <Ticket size={12} /> {reward.code}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-5 py-4">
+                            {reward.userId ? (
+                              <div>
+                                <p className="font-medium">@{reward.userId.username}</p>
+                                <p className="text-xs text-slate-500">{reward.userId.email}</p>
+                              </div>
+                            ) : (
+                              <span className="text-slate-500">-</span>
+                            )}
+                          </td>
+                          <td className="px-5 py-4 font-semibold text-slate-200">
+                            {reward.discountType === 'fixed' ? `£${reward.discountValue}` : `${reward.discountValue}%`}
+                          </td>
+                          <td className="px-5 py-4">
+                            £{reward.minOrderValue.toFixed(2)}
+                          </td>
+                          <td className="px-5 py-4">
+                            {reward.isUsed ? (
+                              <Badge variant="success" className="bg-emerald-950/40 text-emerald-400 border-emerald-900">Used</Badge>
+                            ) : isExpired ? (
+                              <Badge variant="danger" className="bg-rose-950/40 text-rose-400 border-rose-900">Expired</Badge>
+                            ) : (
+                              <Badge variant="info" className="bg-blue-950/40 text-blue-400 border-blue-900">Active</Badge>
+                            )}
+                          </td>
+                          <td className="px-5 py-4 text-xs text-slate-400">
+                            {new Date(reward.expiresAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-5 py-4 text-right">
+                            <Button
+                              variant="ghost"
+                              onClick={() => {
+                                if (confirm('Are you sure you want to revoke this coupon?')) {
+                                  deleteMutation.mutate(reward._id);
+                                }
+                              }}
+                              className="text-rose-500 hover:text-rose-400 hover:bg-rose-950/20 p-1.5"
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {!rewardsData?.length && (
+                      <tr>
+                        <td colSpan={7} className="text-center py-10 text-slate-500">
+                          <Gift className="mx-auto mb-2 text-slate-600" size={32} />
+                          No coupons issued yet.
                         </td>
                       </tr>
-                    );
-                  })}
-                  {!rewardsData?.length && (
-                    <tr>
-                      <td colSpan={7} className="text-center py-10 text-slate-500">
-                        <Gift className="mx-auto mb-2 text-slate-600" size={32} />
-                        No coupons issued yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </main>

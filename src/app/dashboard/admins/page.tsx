@@ -72,52 +72,96 @@ export default function AdminsPage() {
           </Button>
         }
       />
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
           {isLoading ? <PageLoader /> : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-800 text-left text-slate-400">
-                  <th className="px-4 py-3 font-medium">Admin</th>
-                  <th className="px-4 py-3 font-medium">Role</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Last Login</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
+            <>
+              {/* Mobile View */}
+              <div className="block md:hidden divide-y divide-slate-800">
                 {data?.admins?.map((admin) => (
-                  <tr key={admin._id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-slate-200">{admin.firstName} {admin.lastName}</p>
-                      <p className="text-slate-500 text-xs">{admin.email}</p>
-                    </td>
-                    <td className="px-4 py-3">
+                  <div key={admin._id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-slate-200 text-sm">{admin.firstName} {admin.lastName}</p>
+                        <p className="text-slate-500 text-xs">{admin.email}</p>
+                      </div>
                       <Badge variant={admin.role === 'super_admin' ? 'info' : 'default'}>
                         {admin.role.replace(/_/g, ' ')}
                       </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={admin.isActive ? 'success' : 'muted'}>
-                        {admin.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">
-                      {admin.lastLoginAt ? new Date(admin.lastLoginAt).toLocaleDateString() : '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end">
-                        <Button size="sm" variant="ghost" loading={toggleMut.isPending}
-                          onClick={() => toggleMut.mutate({ adminId: admin._id, action: admin.isActive ? 'deactivate' : 'activate' })}>
-                          {admin.isActive ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
-                          {admin.isActive ? 'Deactivate' : 'Activate'}
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-2 text-xs border-t border-slate-800/40 pt-2.5">
+                      <span className="text-slate-500">Status</span>
+                      <span className="text-right">
+                        <Badge variant={admin.isActive ? 'success' : 'muted'}>
+                          {admin.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </span>
+                      <span className="text-slate-500">Last Login</span>
+                      <span className="text-slate-400 text-right">
+                        {admin.lastLoginAt ? new Date(admin.lastLoginAt).toLocaleDateString() : '—'}
+                      </span>
+                    </div>
+                    <div className="flex justify-end pt-2 border-t border-slate-800/50">
+                      <Button size="sm" variant="ghost" loading={toggleMut.isPending}
+                        onClick={() => toggleMut.mutate({ adminId: admin._id, action: admin.isActive ? 'deactivate' : 'activate' })}>
+                        {admin.isActive ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
+                        <span className="ml-1 text-xs">{admin.isActive ? 'Deactivate' : 'Activate'}</span>
+                      </Button>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+                {data?.admins?.length === 0 && (
+                  <p className="py-8 text-center text-slate-500 text-sm">No admin accounts found.</p>
+                )}
+              </div>
+
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-left text-slate-400">
+                      <th className="px-4 py-3 font-medium">Admin</th>
+                      <th className="px-4 py-3 font-medium">Role</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium">Last Login</th>
+                      <th className="px-4 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {data?.admins?.map((admin) => (
+                      <tr key={admin._id} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="px-4 py-3">
+                          <p className="font-medium text-slate-200">{admin.firstName} {admin.lastName}</p>
+                          <p className="text-slate-500 text-xs">{admin.email}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge variant={admin.role === 'super_admin' ? 'info' : 'default'}>
+                            {admin.role.replace(/_/g, ' ')}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge variant={admin.isActive ? 'success' : 'muted'}>
+                            {admin.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-slate-500">
+                          {admin.lastLoginAt ? new Date(admin.lastLoginAt).toLocaleDateString() : '—'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end">
+                            <Button size="sm" variant="ghost" loading={toggleMut.isPending}
+                              onClick={() => toggleMut.mutate({ adminId: admin._id, action: admin.isActive ? 'deactivate' : 'activate' })}>
+                              {admin.isActive ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
+                              {admin.isActive ? 'Deactivate' : 'Activate'}
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
           {data && (
             <div className="border-t border-slate-800 px-4">

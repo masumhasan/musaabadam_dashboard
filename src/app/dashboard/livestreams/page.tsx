@@ -99,11 +99,11 @@ export default function LivestreamsPage() {
   return (
     <ProtectedRoute permission={ADMIN_PERMISSIONS.TERMINATE_STREAMS}>
       <TopBar title="Livestream Monitoring" />
-      <div className="p-6">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
-          <div className="flex flex-wrap items-center gap-2">
-            <Radio size={18} className="text-slate-400 mr-1" />
-            <span className="text-xs text-slate-400 mr-1 font-medium">Status:</span>
+      <div className="p-4 md:p-6">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
+            <Radio size={18} className="text-slate-400 mr-1 flex-shrink-0" />
+            <span className="text-xs text-slate-400 mr-1 font-medium flex-shrink-0">Status:</span>
             {STATUSES.map((s) => (
               <button
                 key={s || 'all'}
@@ -125,53 +125,99 @@ export default function LivestreamsPage() {
           <p className="text-slate-400">No streams.</p>
         ) : (
           <div className="overflow-hidden rounded-xl border border-slate-800">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-900 text-left text-slate-400">
-                <tr>
-                  <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Seller</th>
-                  <th className="px-4 py-3">Viewers</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {data.streams.map((s) => (
-                  <tr key={s._id} className="text-slate-200">
-                    <td className="px-4 py-3">{s.title}</td>
-                    <td className="px-4 py-3">{s.sellerId?.displayName || s.sellerId?.username || '—'}</td>
-                    <td className="px-4 py-3">{s.status === 'live' ? (s.currentViewers ?? 0) : s.totalViewers}</td>
-                    <td className="px-4 py-3">
-                      <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[s.status] || ''}`}>{s.status}</span>
-                    </td>
-                     <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
-                      <Button size="sm" variant="secondary" onClick={() => handleOpenEdit(s)}>
-                        <Pencil size={14} /> Edit
+            {/* Mobile View */}
+            <div className="block md:hidden divide-y divide-slate-800 bg-slate-900">
+              {data.streams.map((s) => (
+                <div key={s._id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold text-slate-100 text-sm">{s.title}</h3>
+                      <p className="text-xs text-slate-500 mt-0.5">Seller: {s.sellerId?.displayName || s.sellerId?.username || '—'}</p>
+                    </div>
+                    <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[s.status] || ''}`}>{s.status}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500">Viewers</span>
+                    <span className="text-slate-300 font-medium">{s.status === 'live' ? (s.currentViewers ?? 0) : s.totalViewers}</span>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-slate-800/50">
+                    <Button size="sm" variant="secondary" onClick={() => handleOpenEdit(s)}>
+                      <Pencil size={14} /> <span className="ml-1 text-xs">Edit</span>
+                    </Button>
+                    <Button size="sm" variant="danger" onClick={() => {
+                      if (window.confirm(`Are you sure you want to delete "${s.title}"?`)) {
+                        deleteMut.mutate(s._id);
+                      }
+                    }}>
+                      <Trash2 size={14} /> <span className="ml-1 text-xs">Delete</span>
+                    </Button>
+                    {s.status === 'live' && (
+                      <Button size="sm" variant="danger" onClick={() => terminateMut.mutate(s._id)}>
+                        <StopCircle size={14} /> <span className="ml-1 text-xs">Terminate</span>
                       </Button>
-                      <Button size="sm" variant="danger" onClick={() => {
-                        if (window.confirm(`Are you sure you want to delete "${s.title}"?`)) {
-                          deleteMut.mutate(s._id);
-                        }
-                      }}>
-                        <Trash2 size={14} /> Delete
-                      </Button>
-                      {s.status === 'live' && (
-                        <Button size="sm" variant="danger" onClick={() => terminateMut.mutate(s._id)}>
-                          <StopCircle size={14} /> Terminate
+                    )}
+                    {s.status === 'ended' && s.recordingStatus === 'ready' && s.recordingUrl && (
+                      <a href={s.recordingUrl} target="_blank" rel="noopener noreferrer" className="inline-block">
+                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-1 px-2.5">
+                          Play Replay
                         </Button>
-                      )}
-                      {s.status === 'ended' && s.recordingStatus === 'ready' && s.recordingUrl && (
-                        <a href={s.recordingUrl} target="_blank" rel="noopener noreferrer" className="inline-block">
-                          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                            Play Replay
-                          </Button>
-                        </a>
-                      )}
-                    </td>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-900 text-left text-slate-400">
+                  <tr>
+                    <th className="px-4 py-3">Title</th>
+                    <th className="px-4 py-3">Seller</th>
+                    <th className="px-4 py-3">Viewers</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {data.streams.map((s) => (
+                    <tr key={s._id} className="text-slate-200">
+                      <td className="px-4 py-3">{s.title}</td>
+                      <td className="px-4 py-3">{s.sellerId?.displayName || s.sellerId?.username || '—'}</td>
+                      <td className="px-4 py-3">{s.status === 'live' ? (s.currentViewers ?? 0) : s.totalViewers}</td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[s.status] || ''}`}>{s.status}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
+                        <Button size="sm" variant="secondary" onClick={() => handleOpenEdit(s)}>
+                          <Pencil size={14} /> Edit
+                        </Button>
+                        <Button size="sm" variant="danger" onClick={() => {
+                          if (window.confirm(`Are you sure you want to delete "${s.title}"?`)) {
+                            deleteMut.mutate(s._id);
+                          }
+                        }}>
+                          <Trash2 size={14} /> Delete
+                        </Button>
+                        {s.status === 'live' && (
+                          <Button size="sm" variant="danger" onClick={() => terminateMut.mutate(s._id)}>
+                            <StopCircle size={14} /> Terminate
+                          </Button>
+                        )}
+                        {s.status === 'ended' && s.recordingStatus === 'ready' && s.recordingUrl && (
+                          <a href={s.recordingUrl} target="_blank" rel="noopener noreferrer" className="inline-block">
+                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                              Play Replay
+                            </Button>
+                          </a>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

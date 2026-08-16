@@ -84,14 +84,14 @@ export default function SettingsPage() {
   const currentTab = TABS.find((t) => t.key === activeTab)!;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 md:p-6 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-100">Settings</h1>
-        <p className="text-sm text-slate-400 mt-1">Manage platform configuration and legal content</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-100">Settings</h1>
+        <p className="text-xs sm:text-sm text-slate-400 mt-1">Manage platform configuration and legal content</p>
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex gap-1 border-b border-slate-800 mb-6">
+      <div className="flex gap-1 border-b border-slate-800 mb-6 overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
         {TABS.map((tab) => (
           <button
             key={tab.key}
@@ -100,7 +100,7 @@ export default function SettingsPage() {
               setErrorMsg('');
               setActiveTab(tab.key);
             }}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors flex-shrink-0 ${
               activeTab === tab.key
                 ? 'border-blue-500 text-blue-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'

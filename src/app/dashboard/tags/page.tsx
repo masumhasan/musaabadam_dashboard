@@ -65,13 +65,13 @@ export default function TagsPage() {
     <ProtectedRoute permission={ADMIN_PERMISSIONS.VIEW_REPORTS}>
       <TopBar title="Tags" subtitle="Manage global platform discoverability tags" />
       
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-600 border-t-blue-500" />
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 flex flex-col h-[500px]">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 flex flex-col min-h-[350px] lg:h-[500px]">
             <div className="flex items-center gap-2 mb-4">
               <Hash size={20} className="text-blue-400" />
               <h2 className="text-lg font-semibold text-slate-100">Allowed Tags</h2>

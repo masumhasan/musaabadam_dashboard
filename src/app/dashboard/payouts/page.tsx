@@ -49,11 +49,11 @@ export default function PayoutsPage() {
   return (
     <ProtectedRoute permission={ADMIN_PERMISSIONS.APPROVE_PAYOUTS}>
       <TopBar title="Payouts" />
-      <div className="p-6">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
-          <div className="flex flex-wrap items-center gap-2">
-            <Banknote size={18} className="text-slate-400 mr-1" />
-            <span className="text-xs text-slate-400 mr-1 font-medium">Status:</span>
+      <div className="p-4 md:p-6">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
+            <Banknote size={18} className="text-slate-400 mr-1 flex-shrink-0" />
+            <span className="text-xs text-slate-400 mr-1 font-medium flex-shrink-0">Status:</span>
             {STATUSES.map((s) => (
               <button
                 key={s || 'all'}
@@ -68,14 +68,14 @@ export default function PayoutsPage() {
         </div>
 
         {data && (
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Paid Payouts</p>
-              <p className="mt-2 text-3xl font-bold text-emerald-400">£{data.totalPaid.toFixed(2)}</p>
+              <p className="mt-2 text-2xl sm:text-3xl font-bold text-emerald-400">£{data.totalPaid.toFixed(2)}</p>
             </div>
             <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Pending/Processing Payouts</p>
-              <p className="mt-2 text-3xl font-bold text-amber-400">£{data.totalPending.toFixed(2)}</p>
+              <p className="mt-2 text-2xl sm:text-3xl font-bold text-amber-400">£{data.totalPending.toFixed(2)}</p>
             </div>
           </div>
         )}
@@ -86,30 +86,55 @@ export default function PayoutsPage() {
           <p className="text-slate-400">No payouts.</p>
         ) : (
           <div className="overflow-hidden rounded-xl border border-slate-800">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-900 text-left text-slate-400">
-                <tr>
-                  <th className="px-4 py-3">Seller</th>
-                  <th className="px-4 py-3">Amount</th>
-                  <th className="px-4 py-3">Provider</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {data.payouts.map((p) => (
-                  <tr key={p._id} className="text-slate-200">
-                    <td className="px-4 py-3">{p.sellerId?.displayName || p.sellerId?.username || '—'}</td>
-                    <td className="px-4 py-3">£{p.amount.toFixed(2)}</td>
-                    <td className="px-4 py-3 capitalize">{p.provider}</td>
-                    <td className="px-4 py-3">
-                      <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[p.status] || ''}`}>{p.status}</span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-400">{new Date(p.createdAt).toLocaleDateString()}</td>
+            {/* Mobile View */}
+            <div className="block md:hidden divide-y divide-slate-800 bg-slate-900">
+              {data.payouts.map((p) => (
+                <div key={p._id} className="p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-200 text-sm">{p.sellerId?.displayName || p.sellerId?.username || '—'}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[p.status] || ''}`}>{p.status}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-1.5 text-xs">
+                    <span className="text-slate-500">Provider</span>
+                    <span className="text-slate-300 text-right capitalize">{p.provider}</span>
+                    <span className="text-slate-500">Date</span>
+                    <span className="text-slate-400 text-right">{new Date(p.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="border-t border-slate-850 pt-2 flex items-center justify-between">
+                    <span className="text-xs text-slate-500 font-medium">Amount</span>
+                    <span className="font-semibold text-slate-100">£{p.amount.toFixed(2)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-900 text-left text-slate-400">
+                  <tr>
+                    <th className="px-4 py-3">Seller</th>
+                    <th className="px-4 py-3">Amount</th>
+                    <th className="px-4 py-3">Provider</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {data.payouts.map((p) => (
+                    <tr key={p._id} className="text-slate-200">
+                      <td className="px-4 py-3">{p.sellerId?.displayName || p.sellerId?.username || '—'}</td>
+                      <td className="px-4 py-3">£{p.amount.toFixed(2)}</td>
+                      <td className="px-4 py-3 capitalize">{p.provider}</td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_STYLES[p.status] || ''}`}>{p.status}</span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-400">{new Date(p.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

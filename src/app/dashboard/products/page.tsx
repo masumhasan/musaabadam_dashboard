@@ -98,9 +98,9 @@ export default function ProductsPage() {
     <ProtectedRoute>
       <TopBar title="Products" subtitle="Browse and moderate all seller listings" />
 
-      <div className="p-6 space-y-4">
+      <div className="p-4 md:p-6 space-y-4">
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex gap-2 flex-1 min-w-52">
             <Input
               placeholder="Search title or description…"
@@ -110,52 +110,41 @@ export default function ProductsPage() {
             />
             <Button variant="ghost" onClick={handleSearch}><Search size={16} /></Button>
           </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value as ProductStatus | ''); setPage(1); }}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          <select
-            value={listingFilter}
-            onChange={(e) => { setListingFilter(e.target.value as ListingType | ''); setPage(1); }}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {LISTING_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
+          <div className="flex flex-wrap gap-2 sm:gap-3">
+            <select
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value as ProductStatus | ''); setPage(1); }}
+              className="flex-1 sm:flex-initial rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+            <select
+              value={listingFilter}
+              onChange={(e) => { setListingFilter(e.target.value as ListingType | ''); setPage(1); }}
+              className="flex-1 sm:flex-initial rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {LISTING_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </div>
         </div>
 
         {/* Table */}
         <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
           {isLoading ? <PageLoader /> : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-800 text-left text-slate-400">
-                  <th className="px-4 py-3 font-medium">Product</th>
-                  <th className="px-4 py-3 font-medium">Seller</th>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 font-medium">Type</th>
-                  <th className="px-4 py-3 font-medium">Price</th>
-                  <th className="px-4 py-3 font-medium">Stock / Variants</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Listed</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
+            <>
+              {/* Mobile View */}
+              <div className="block md:hidden divide-y divide-slate-800">
                 {data?.products?.map((product) => (
-                  <tr key={product._id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-4 py-3 max-w-56">
-                      <div className="flex items-center gap-2.5">
+                  <div key={product._id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-2.5 min-w-0">
                         {product.images?.[0] ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={product.images[0]} alt="" className="h-9 w-9 rounded object-cover flex-shrink-0" />
+                          <img src={product.images[0]} alt="" className="h-10 w-10 rounded object-cover flex-shrink-0" />
                         ) : (
-                          <div className="h-9 w-9 rounded bg-slate-700 flex-shrink-0" />
+                          <div className="h-10 w-10 rounded bg-slate-750 flex-shrink-0" />
                         )}
-                        <div className="truncate">
-                          <p className="font-medium text-slate-200 truncate flex items-center gap-1">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-200 truncate flex items-center gap-1 text-sm">
                             {product.title}
                             {product.hazardousMaterials && (
                               <span title="Hazardous Materials" className="inline-flex items-center text-amber-400">
@@ -164,68 +153,152 @@ export default function ProductsPage() {
                             )}
                           </p>
                           {product.hazardousMaterials && (
-                            <span className="text-[10px] font-semibold text-amber-400/90 uppercase tracking-wider block">
+                            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mt-0.5">
                               Hazardous
                             </span>
                           )}
+                          <p className="text-xs text-slate-500 mt-0.5">Seller: {sellerName(product)}</p>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-400">{sellerName(product)}</td>
-                    <td className="px-4 py-3 text-slate-500 truncate max-w-28">{product.category}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant="default">{product.listingType.replace('_', ' ')}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-slate-300 font-mono text-xs">{priceLabel(product)}</td>
-                    <td className="px-4 py-3 text-slate-300">
-                      <div className="flex flex-col text-xs">
-                        <span className="font-medium text-slate-200">{product.quantity} in stock</span>
-                        {product.variants && product.variants.length > 0 ? (
-                          <span className="text-blue-400 text-[11px]">
-                            {product.variants.length} {product.variants.length === 1 ? 'variant' : 'variants'} (
-                            {product.variants.map((v) => `${v.name}: ${v.quantity}`).join(', ')})
-                          </span>
-                        ) : (
-                          <span className="text-slate-500 text-[11px]">No variants</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
                       <Badge variant={STATUS_VARIANT[product.status] ?? 'default'}>
                         {product.status.replace('_', ' ')}
                       </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500 text-xs">
-                      {new Date(product.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end">
-                        {product.status === 'active' ? (
-                          <Button size="sm" variant="ghost"
-                            loading={deactivateMut.isPending}
-                            onClick={() => deactivateMut.mutate(product._id)}>
-                            <ToggleRight size={14} /> Deactivate
-                          </Button>
-                        ) : product.status === 'inactive' || product.status === 'draft' ? (
-                          <Button size="sm" variant="ghost"
-                            loading={activateMut.isPending}
-                            onClick={() => activateMut.mutate(product._id)}>
-                            <ToggleLeft size={14} /> Activate
-                          </Button>
-                        ) : null}
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-2 text-xs border-t border-slate-800/40 pt-2.5">
+                      <span className="text-slate-500">Category</span>
+                      <span className="text-slate-300 text-right truncate pl-4">{product.category || '—'}</span>
+                      <span className="text-slate-500">Listing Type</span>
+                      <span className="text-slate-300 text-right capitalize">{product.listingType.replace('_', ' ')}</span>
+                      <span className="text-slate-500">Stock / Variants</span>
+                      <div className="text-slate-300 text-right">
+                        <span className="font-medium block">{product.quantity} in stock</span>
+                        {product.variants && product.variants.length > 0 && (
+                          <span className="text-blue-400 text-[10px] block">
+                            {product.variants.length} variant(s)
+                          </span>
+                        )}
                       </div>
-                    </td>
-                  </tr>
+                      <span className="text-slate-500">Price</span>
+                      <span className="font-mono text-slate-200 text-right font-medium">{priceLabel(product)}</span>
+                      <span className="text-slate-500">Listed Date</span>
+                      <span className="text-slate-400 text-right">{new Date(product.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-end pt-2 border-t border-slate-800/50">
+                      {product.status === 'active' ? (
+                        <Button size="sm" variant="ghost"
+                          loading={deactivateMut.isPending}
+                          onClick={() => deactivateMut.mutate(product._id)}>
+                          <ToggleRight size={14} /> <span className="ml-1 text-xs">Deactivate</span>
+                        </Button>
+                      ) : product.status === 'inactive' || product.status === 'draft' ? (
+                        <Button size="sm" variant="ghost"
+                          loading={activateMut.isPending}
+                          onClick={() => activateMut.mutate(product._id)}>
+                          <ToggleLeft size={14} /> <span className="ml-1 text-xs">Activate</span>
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
                 ))}
                 {!isLoading && data?.products?.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center text-slate-500">
-                      No products match your filters.
-                    </td>
-                  </tr>
+                  <p className="py-8 text-center text-slate-500 text-sm">No products match your filters.</p>
                 )}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-left text-slate-400">
+                      <th className="px-4 py-3 font-medium">Product</th>
+                      <th className="px-4 py-3 font-medium">Seller</th>
+                      <th className="px-4 py-3 font-medium">Category</th>
+                      <th className="px-4 py-3 font-medium">Type</th>
+                      <th className="px-4 py-3 font-medium">Price</th>
+                      <th className="px-4 py-3 font-medium">Stock / Variants</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium">Listed</th>
+                      <th className="px-4 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {data?.products?.map((product) => (
+                      <tr key={product._id} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="px-4 py-3 max-w-56">
+                          <div className="flex items-center gap-2.5">
+                            {product.images?.[0] ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={product.images[0]} alt="" className="h-9 w-9 rounded object-cover flex-shrink-0" />
+                            ) : (
+                              <div className="h-9 w-9 rounded bg-slate-700 flex-shrink-0" />
+                            )}
+                            <div className="truncate">
+                              <p className="font-medium text-slate-200 truncate flex items-center gap-1">
+                                {product.title}
+                                {product.hazardousMaterials && (
+                                  <span title="Hazardous Materials" className="inline-flex items-center text-amber-400">
+                                    <AlertTriangle size={14} />
+                                  </span>
+                                )}
+                              </p>
+                              {product.hazardousMaterials && (
+                                <span className="text-[10px] font-semibold text-amber-400/90 uppercase tracking-wider block">
+                                  Hazardous
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-slate-400">{sellerName(product)}</td>
+                        <td className="px-4 py-3 text-slate-500 truncate max-w-28">{product.category}</td>
+                        <td className="px-4 py-3">
+                          <Badge variant="default">{product.listingType.replace('_', ' ')}</Badge>
+                        </td>
+                        <td className="px-4 py-3 text-slate-300 font-mono text-xs">{priceLabel(product)}</td>
+                        <td className="px-4 py-3 text-slate-300">
+                          <div className="flex flex-col text-xs">
+                            <span className="font-medium text-slate-200">{product.quantity} in stock</span>
+                            {product.variants && product.variants.length > 0 ? (
+                              <span className="text-blue-400 text-[11px]">
+                                {product.variants.length} {product.variants.length === 1 ? 'variant' : 'variants'} (
+                                {product.variants.map((v) => `${v.name}: ${v.quantity}`).join(', ')})
+                              </span>
+                            ) : (
+                              <span className="text-slate-500 text-[11px]">No variants</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge variant={STATUS_VARIANT[product.status] ?? 'default'}>
+                            {product.status.replace('_', ' ')}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-slate-500 text-xs">
+                          {new Date(product.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end">
+                            {product.status === 'active' ? (
+                              <Button size="sm" variant="ghost"
+                                loading={deactivateMut.isPending}
+                                onClick={() => deactivateMut.mutate(product._id)}>
+                                <ToggleRight size={14} /> Deactivate
+                              </Button>
+                            ) : product.status === 'inactive' || product.status === 'draft' ? (
+                              <Button size="sm" variant="ghost"
+                                loading={activateMut.isPending}
+                                onClick={() => activateMut.mutate(product._id)}>
+                                <ToggleLeft size={14} /> Activate
+                              </Button>
+                            ) : null}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
           {data && data.total > 0 && (
             <div className="border-t border-slate-800 px-4">

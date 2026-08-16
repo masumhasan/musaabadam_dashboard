@@ -101,23 +101,23 @@ export default function PremierShopAdminPage() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
               <Award size={22} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-100">Premier Shop Settings</h1>
-              <p className="text-sm text-slate-400">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-100">Premier Shop Settings</h1>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">
                 Configure eligibility criteria, perks, and commission discounts for top-performing sellers
               </p>
             </div>
           </div>
         </div>
-        <Button onClick={handleSave} loading={saving} className="gap-2">
+        <Button onClick={handleSave} loading={saving} className="gap-2 w-full sm:w-auto justify-center">
           <Save size={16} /> Save Changes
         </Button>
       </div>

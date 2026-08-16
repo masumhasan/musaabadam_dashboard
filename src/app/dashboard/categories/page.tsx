@@ -137,83 +137,145 @@ export default function CategoriesPage() {
         }
       />
 
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
           {isLoading ? <PageLoader /> : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-800 text-left text-slate-400">
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Slug</th>
-                  <th className="px-4 py-3 font-medium">Parent</th>
-                  <th className="px-4 py-3 font-medium">Order</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
+            <>
+              {/* Mobile View */}
+              <div className="block md:hidden divide-y divide-slate-800">
                 {data?.categories?.map((cat) => (
-                  <tr key={cat._id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-4 py-3">
+                  <div key={cat._id} className="p-4 space-y-3">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
                         {cat.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={cat.imageUrl} alt="" className="h-7 w-7 rounded object-cover" />
+                          <img src={cat.imageUrl} alt="" className="h-8 w-8 rounded object-cover" />
                         ) : (
-                          <div className="h-7 w-7 rounded bg-slate-800 border border-slate-700 flex items-center justify-center">
-                            <span className="text-[10px] text-slate-500 font-medium">N/A</span>
+                          <div className="h-8 w-8 rounded bg-slate-800 border border-slate-700 flex items-center justify-center">
+                            <span className="text-[9px] text-slate-500 font-medium">N/A</span>
                           </div>
                         )}
-                        <p className="font-medium text-slate-200">{cat.name}</p>
+                        <p className="font-semibold text-slate-200">{cat.name}</p>
                       </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500 font-mono text-xs">{cat.slug}</td>
-                    <td className="px-4 py-3 text-slate-400">
-                      {cat.parentId ? (
-                        <Badge variant="default">{cat.parentId.name}</Badge>
-                      ) : (
-                        <span className="text-slate-600 text-xs">Top-level</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">{cat.sortOrder}</td>
-                    <td className="px-4 py-3">
                       <Badge variant={cat.isActive ? 'success' : 'muted'}>
                         {cat.isActive ? 'Active' : 'Inactive'}
                       </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Button size="sm" variant="ghost"
-                          onClick={() => toggleActiveMut.mutate({ id: cat._id, isActive: !cat.isActive })}
-                          loading={toggleActiveMut.isPending}>
-                          {cat.isActive ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => openEdit(cat)}>
-                          <Pencil size={14} />
-                        </Button>
-                        <Button size="sm" variant="ghost"
-                          onClick={() => {
-                            if (confirm(`Delete "${cat.name}"? This cannot be undone.`)) {
-                              deleteMut.mutate(cat._id);
-                            }
-                          }}
-                          loading={deleteMut.isPending}
-                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-2 text-xs border-t border-slate-800/40 pt-2.5">
+                      <span className="text-slate-500">Slug</span>
+                      <span className="font-mono text-slate-300 text-right truncate pl-4">{cat.slug}</span>
+                      <span className="text-slate-500">Parent</span>
+                      <span className="text-slate-400 text-right">
+                        {cat.parentId ? <Badge variant="default">{cat.parentId.name}</Badge> : <span className="text-slate-600">Top-level</span>}
+                      </span>
+                      <span className="text-slate-500">Sort Order</span>
+                      <span className="text-slate-400 text-right">{cat.sortOrder}</span>
+                    </div>
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800/50">
+                      <Button size="sm" variant="ghost"
+                        onClick={() => toggleActiveMut.mutate({ id: cat._id, isActive: !cat.isActive })}
+                        loading={toggleActiveMut.isPending}>
+                        {cat.isActive ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+                        <span className="ml-1 text-xs">{cat.isActive ? 'Deactivate' : 'Activate'}</span>
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(cat)}>
+                        <Pencil size={14} /> <span className="ml-1 text-xs">Edit</span>
+                      </Button>
+                      <Button size="sm" variant="ghost"
+                        onClick={() => {
+                          if (confirm(`Delete "${cat.name}"? This cannot be undone.`)) {
+                            deleteMut.mutate(cat._id);
+                          }
+                        }}
+                        loading={deleteMut.isPending}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
+                        <Trash2 size={14} /> <span className="ml-1 text-xs">Delete</span>
+                      </Button>
+                    </div>
+                  </div>
                 ))}
                 {data?.categories?.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
-                      No categories yet. Create your first one above.
-                    </td>
-                  </tr>
+                  <p className="py-8 text-center text-slate-500 text-sm">No categories yet.</p>
                 )}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-left text-slate-400">
+                      <th className="px-4 py-3 font-medium">Name</th>
+                      <th className="px-4 py-3 font-medium">Slug</th>
+                      <th className="px-4 py-3 font-medium">Parent</th>
+                      <th className="px-4 py-3 font-medium">Order</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {data?.categories?.map((cat) => (
+                      <tr key={cat._id} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2.5">
+                            {cat.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={cat.imageUrl} alt="" className="h-7 w-7 rounded object-cover" />
+                            ) : (
+                              <div className="h-7 w-7 rounded bg-slate-800 border border-slate-700 flex items-center justify-center">
+                                <span className="text-[10px] text-slate-500 font-medium">N/A</span>
+                              </div>
+                            )}
+                            <p className="font-medium text-slate-200">{cat.name}</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-slate-500 font-mono text-xs">{cat.slug}</td>
+                        <td className="px-4 py-3 text-slate-400">
+                          {cat.parentId ? (
+                            <Badge variant="default">{cat.parentId.name}</Badge>
+                          ) : (
+                            <span className="text-slate-600 text-xs">Top-level</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-slate-500">{cat.sortOrder}</td>
+                        <td className="px-4 py-3">
+                          <Badge variant={cat.isActive ? 'success' : 'muted'}>
+                            {cat.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button size="sm" variant="ghost"
+                              onClick={() => toggleActiveMut.mutate({ id: cat._id, isActive: !cat.isActive })}
+                              loading={toggleActiveMut.isPending}>
+                              {cat.isActive ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => openEdit(cat)}>
+                              <Pencil size={14} />
+                            </Button>
+                            <Button size="sm" variant="ghost"
+                              onClick={() => {
+                                if (confirm(`Delete "${cat.name}"? This cannot be undone.`)) {
+                                  deleteMut.mutate(cat._id);
+                                }
+                              }}
+                              loading={deleteMut.isPending}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {data?.categories?.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                          No categories yet. Create your first one above.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
           {data && data.total > 0 && (
             <div className="border-t border-slate-800 px-4">

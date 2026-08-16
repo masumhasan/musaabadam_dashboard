@@ -14,28 +14,33 @@ export function Pagination({ page, totalPages, total, limit, onChange }: Paginat
   const end = Math.min(page * limit, total);
 
   return (
-    <div className="flex items-center justify-between px-1 py-3 text-sm text-slate-400">
-      <span>
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-1 py-3 text-sm text-slate-400">
+      <span className="text-xs sm:text-sm">
         {total === 0 ? 'No results' : `Showing ${start}–${end} of ${total}`}
       </span>
       <div className="flex items-center gap-1">
         <PageBtn disabled={page <= 1} onClick={() => onChange(page - 1)}>
           <ChevronLeft size={16} />
         </PageBtn>
-        {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-          const p = i + 1;
-          return (
-            <PageBtn key={p} active={p === page} onClick={() => onChange(p)}>
-              {p}
-            </PageBtn>
-          );
-        })}
-        {totalPages > 7 && page < totalPages - 3 && (
-          <>
-            <span className="px-1">…</span>
-            <PageBtn onClick={() => onChange(totalPages)}>{totalPages}</PageBtn>
-          </>
-        )}
+        <span className="inline-flex items-center px-3 text-xs sm:hidden text-slate-300 font-medium">
+          Page {page} of {totalPages || 1}
+        </span>
+        <div className="hidden sm:flex items-center gap-1">
+          {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+            const p = i + 1;
+            return (
+              <PageBtn key={p} active={p === page} onClick={() => onChange(p)}>
+                {p}
+              </PageBtn>
+            );
+          })}
+          {totalPages > 7 && page < totalPages - 3 && (
+            <>
+              <span className="px-1">…</span>
+              <PageBtn onClick={() => onChange(totalPages)}>{totalPages}</PageBtn>
+            </>
+          )}
+        </div>
         <PageBtn disabled={page >= totalPages} onClick={() => onChange(page + 1)}>
           <ChevronRight size={16} />
         </PageBtn>

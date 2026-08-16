@@ -84,13 +84,13 @@ export default function MutedWordsPage() {
     <ProtectedRoute permission={ADMIN_PERMISSIONS.VIEW_REPORTS}>
       <TopBar title="Muted Words" subtitle="Manage chat moderation filters" />
       
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-600 border-t-blue-500" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[500px]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px] lg:h-[650px]">
             
             {/* Global Muted Words Card */}
             <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 flex flex-col h-full">

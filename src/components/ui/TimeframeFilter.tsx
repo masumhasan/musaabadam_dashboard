@@ -27,7 +27,7 @@ export function TimeframeFilter({ value, onChange, showIcon = true }: TimeframeF
           <span>Filter:</span>
         </div>
       )}
-      <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-0.5 text-xs font-medium">
+      <div className="flex overflow-x-auto rounded-lg border border-slate-800 bg-slate-950 p-0.5 text-xs font-medium max-w-full scrollbar-none">
         {TIMEFRAMES.map((t) => (
           <button
             key={t.value}
